@@ -2,6 +2,7 @@ import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse, AxiosE
 import { API_URL } from './constants';
 import { useAuthStore } from '@/store/authStore';
 import type { ApiResponse, Product, Category, Order, DashboardStats, HeroSlide, SiteSettings, FooterSocial } from '@/types';
+import type { Announcement, CreateAnnouncementData, UpdateAnnouncementData } from '@/types/announcement';
 
 const apiClient: AxiosInstance = axios.create({
   baseURL: API_URL,
@@ -138,14 +139,14 @@ export const footerSocialApi = {
 export const announcementsApi = {
   getAll: () =>
     apiClient.get<ApiResponse<Announcement[]>>('/api/announcement/all'),
-  create: (data: Record<string, unknown>) =>
+  getActive: () =>
+    apiClient.get<ApiResponse<Announcement>>('/api/announcement/active'),
+  create: (data: CreateAnnouncementData) =>
     apiClient.post<ApiResponse<Announcement>>('/api/announcement', data),
-  update: (id: string, data: Record<string, unknown>) =>
+  update: (id: string, data: UpdateAnnouncementData) =>
     apiClient.put<ApiResponse<Announcement>>(`/api/announcement/${id}`, data),
   delete: (id: string) =>
-    apiClient.delete<ApiResponse<null>>(`/api/announcement/${id}`),
-  toggle: (id: string) =>
-    apiClient.put<ApiResponse<Announcement>>(`/api/announcement/${id}/toggle`),
+    apiClient.delete<ApiResponse<void>>(`/api/announcement/${id}`),
 };
 
 export default apiClient;
