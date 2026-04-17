@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
-import { FiPlus, FiSave, FiTrash2, FiUpload, FiX } from 'react-icons/fi';
+import { FiPlus, FiSave, FiTrash2, FiUpload, FiX, FiExternalLink } from 'react-icons/fi';
 import { useSettings, useUpdateSettings } from '@/hooks/useSettings';
 import { uploadApi } from '@/lib/api';
 import type { SiteSettings } from '@/types';
@@ -38,27 +38,31 @@ export default function SettingsPage() {
     workingHours: '',
     formSubmitEmail: '',
     orderSuccessMessage: '',
+    reviewsEnabled: true,
+    reviewsRequireApproval: true,
     paymentMethods: [createPaymentMethod({ code: 'cod', label: 'Cash on Delivery', type: 'cod', instructions: 'Pay when you receive your order.', sortOrder: 0 })],
   });
 
-  useEffect(() => {
-    if (settings) {
-      setForm({
-        logo: settings.logo || '',
-        logoWidth: settings.logoWidth || 32,
-        contactEmail: settings.contactEmail || '',
-        contactPhone: settings.contactPhone || '',
-        contactAddress: settings.contactAddress || '',
-        whatsappNumber: settings.whatsappNumber || '',
-        workingHours: settings.workingHours || '',
-        formSubmitEmail: settings.formSubmitEmail || '',
-        orderSuccessMessage: settings.orderSuccessMessage || '',
-        paymentMethods: settings.paymentMethods?.length
-          ? settings.paymentMethods.map((method, index) => createPaymentMethod({ ...method, sortOrder: index }))
-          : [createPaymentMethod({ code: 'cod', label: 'Cash on Delivery', type: 'cod', instructions: 'Pay when you receive your order.', sortOrder: 0 })],
-      });
-    }
-  }, [settings]);
+   useEffect(() => {
+     if (settings) {
+       setForm({
+         logo: settings.logo || '',
+         logoWidth: settings.logoWidth || 32,
+         contactEmail: settings.contactEmail || '',
+         contactPhone: settings.contactPhone || '',
+         contactAddress: settings.contactAddress || '',
+         whatsappNumber: settings.whatsappNumber || '',
+         workingHours: settings.workingHours || '',
+         formSubmitEmail: settings.formSubmitEmail || '',
+         orderSuccessMessage: settings.orderSuccessMessage || '',
+         reviewsEnabled: settings.reviewsEnabled !== false,
+         reviewsRequireApproval: settings.reviewsRequireApproval !== false,
+         paymentMethods: settings.paymentMethods?.length
+           ? settings.paymentMethods.map((method, index) => createPaymentMethod({ ...method, sortOrder: index }))
+           : [createPaymentMethod({ code: 'cod', label: 'Cash on Delivery', type: 'cod', instructions: 'Pay when you receive your order.', sortOrder: 0 })],
+       });
+     }
+   }, [settings]);
 
   const updatePaymentMethod = (index: number, key: keyof PaymentMethodForm, value: string | boolean | number) => {
     setForm((prev) => ({
@@ -150,14 +154,15 @@ export default function SettingsPage() {
       {/* Logo */}
       <div className="card p-4 sm:p-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Logo</h2>
-        <div className="flex flex-col sm:flex-row items-start gap-6">
+        <div className="flex flex-col gap-6">
+          {/* Current Logo Preview */}
           <div className="flex-shrink-0">
             {form.logo ? (
               <div className="relative group">
                 <div className="h-24 w-40 bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center overflow-hidden">
-                  <img 
-                    src={form.logo} 
-                    alt="Logo" 
+                  <img
+                    src={form.logo}
+                    alt="Logo"
                     className="max-h-16 max-w-32 object-contain"
                     style={{ width: `${form.logoWidth}px` }}
                     onError={(e) => {
@@ -166,8 +171,8 @@ export default function SettingsPage() {
                     }}
                   />
                 </div>
-                <button 
-                  onClick={() => setForm(prev => ({ ...prev, logo: '' }))} 
+                <button
+                  onClick={() => setForm(prev => ({ ...prev, logo: '' }))}
                   className="absolute -top-2 -right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-lg"
                   title="Remove logo"
                 >
@@ -180,33 +185,68 @@ export default function SettingsPage() {
               </div>
             )}
           </div>
-          <div className="flex-1 space-y-3 w-full">
-            <label className="flex items-center gap-2 btn-secondary cursor-pointer w-fit">
-              <FiUpload className="h-4 w-4" />
-              {uploading ? 'Uploading...' : 'Upload Logo'}
-              <input 
-                type="file" 
-                accept="image/jpeg,image/png,image/webp,image/gif,image/svg+xml,image/bmp,image/tiff" 
-                onChange={handleLogoUpload} 
-                className="hidden" 
-                disabled={uploading} 
+
+          {/* Logo Configuration */}
+          <div className="flex-1 space-y-4 w-full">
+            {/* URL Input */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Logo URL</label>
+              <input
+                type="url"
+                value={form.logo}
+                onChange={(e) => setForm(prev => ({ ...prev, logo: e.target.value }))}
+                className="input-field"
+                placeholder="https://example.com/logo.png"
               />
-            </label>
-            <div className="text-xs text-gray-500">
-              Supported formats: JPG, PNG, WebP, GIF, SVG, BMP, TIFF (Max 5MB)
+              <p className="text-xs text-gray-500 mt-1">
+                Enter a direct image URL or upload below
+              </p>
             </div>
+
+            {/* Upload Option */}
+            <div>
+              <label className="flex items-center gap-2 btn-secondary cursor-pointer w-fit">
+                <FiUpload className="h-4 w-4" />
+                {uploading ? 'Uploading...' : 'Upload Logo'}
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif,image/svg+xml,image/bmp,image/tiff"
+                  onChange={handleLogoUpload}
+                  className="hidden"
+                  disabled={uploading}
+                />
+              </label>
+              <p className="text-xs text-gray-500 mt-1">
+                Supported formats: JPG, PNG, WebP, GIF, SVG, BMP, TIFF (Max 5MB)
+              </p>
+            </div>
+
+            {/* Width Setting */}
             <div className="flex items-center gap-3">
               <label className="text-sm text-gray-600">Display Width:</label>
-              <input 
-                type="number" 
-                value={form.logoWidth} 
-                onChange={e => setForm(prev => ({ ...prev, logoWidth: parseInt(e.target.value) || 32 }))} 
-                className="input-field w-20" 
+              <input
+                type="number"
+                value={form.logoWidth}
+                onChange={e => setForm(prev => ({ ...prev, logoWidth: parseInt(e.target.value) || 32 }))}
+                className="input-field w-20"
                 min="16"
                 max="200"
               />
               <span className="text-xs text-gray-400">px</span>
             </div>
+
+            {/* Preview Link */}
+            {form.logo && (
+              <a
+                href={form.logo}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+              >
+                <FiExternalLink size={12} />
+                Open logo in new tab
+              </a>
+            )}
           </div>
         </div>
       </div>
@@ -263,17 +303,9 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      <div className="card p-4 sm:p-6">
-        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900">Checkout Payment Methods</h2>
-            <p className="mt-1 text-sm text-gray-500">Control COD and pay-now methods like Easypaisa, JazzCash, or bank transfer from here.</p>
-          </div>
-          <button type="button" onClick={addPaymentMethod} className="btn-secondary w-full sm:w-auto">
-            <FiPlus className="mr-2 h-4 w-4" />
-            Add Method
-          </button>
-        </div>
+       <div className="card p-4 sm:p-6">
+         <h2 className="text-lg font-semibold text-gray-900 mb-4">Checkout Payment Methods</h2>
+         <p className="text-sm text-gray-500 mb-4">Control COD and pay-now methods like Easypaisa, JazzCash, or bank transfer from here.</p>
 
         <div className="space-y-4">
           {form.paymentMethods.map((method, index) => (
@@ -392,6 +424,43 @@ export default function SettingsPage() {
               </div>
             </div>
           ))}
+        </div>
+      </div>
+
+      <div className="card p-4 sm:p-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Review Settings</h2>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between rounded-lg border border-gray-200 p-4">
+            <div>
+              <p className="font-medium text-gray-900">Enable Customer Reviews</p>
+              <p className="text-sm text-gray-500">Allow customers to leave reviews on product pages</p>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={form.reviewsEnabled ?? true}
+                onChange={(e) => setForm(prev => ({ ...prev, reviewsEnabled: e.target.checked }))}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+            </label>
+          </div>
+
+          <div className="flex items-center justify-between rounded-lg border border-gray-200 p-4">
+            <div>
+              <p className="font-medium text-gray-900">Require Approval</p>
+              <p className="text-sm text-gray-500">Reviews must be approved by admin before showing</p>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={form.reviewsRequireApproval ?? true}
+                onChange={(e) => setForm(prev => ({ ...prev, reviewsRequireApproval: e.target.checked }))}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+            </label>
+          </div>
         </div>
       </div>
 

@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import { API_URL } from './constants';
 import { useAuthStore } from '@/store/authStore';
-import type { ApiResponse, Product, Category, Order, DashboardStats, HeroSlide, SiteSettings, FooterSocial, ContactMessage } from '@/types';
+import type { ApiResponse, Product, Category, Order, DashboardStats, HeroSlide, SiteSettings, FooterSocial, ContactMessage, Review } from '@/types';
 import type { Announcement, CreateAnnouncementData, UpdateAnnouncementData } from '@/types/announcement';
 
 const apiClient: AxiosInstance = axios.create({
@@ -156,6 +156,28 @@ export const announcementsApi = {
     apiClient.put<ApiResponse<Announcement>>(`/api/announcement/${id}/toggle`),
   delete: (id: string) =>
     apiClient.delete<ApiResponse<void>>(`/api/announcement/${id}`),
+};
+
+// Reviews
+export const reviewsApi = {
+  getAll: (params?: { page?: number; limit?: number; product?: string; approved?: boolean }) =>
+    apiClient.get<ApiResponse<{ reviews: Review[]; pagination: any }>>('/api/admin/reviews', { params }),
+  getStats: () =>
+    apiClient.get<ApiResponse<{ total: number; pending: number; approved: number; ratingDistribution: Record<number, number> }>>('/api/admin/reviews/stats'),
+  approve: (id: string, approved: boolean) =>
+    apiClient.put<ApiResponse<Review>>(`/api/admin/reviews/${id}/approve`, { approved }),
+  delete: (id: string) =>
+    apiClient.delete<ApiResponse<null>>(`/api/admin/reviews/${id}`),
+};
+
+// ImageKit Management
+export const imagesApi = {
+  getAll: (params?: { folder?: string; page?: number; limit?: number }) =>
+    apiClient.get<ApiResponse<{ files: any[]; pagination: { page: number; limit: number; total: number } }>>('/api/images', { params }),
+  delete: (fileId: string) =>
+    apiClient.delete<ApiResponse<null>>(`/api/images/${fileId}`),
+  bulkDelete: (fileIds: string[]) =>
+    apiClient.delete<ApiResponse<null>>('/api/images/bulk', { data: { fileIds } }),
 };
 
 export default apiClient;

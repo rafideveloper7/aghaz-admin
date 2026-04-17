@@ -17,6 +17,8 @@ import {
   FiSettings,
   FiShare2,
   FiMail,
+  FiMessageSquare,
+  FiFile,
 } from 'react-icons/fi';
 import { useState } from 'react';
 import { useAuthStore } from '@/store/authStore';
@@ -31,6 +33,8 @@ const navItems = [
   { label: 'Announcement', href: '/announcement', icon: FiBell },
   { label: 'Footer Social', href: '/footer-social', icon: FiShare2 },
   { label: 'Messages', href: '/messages', icon: FiMail },
+  { label: 'Reviews', href: '/reviews', icon: FiMessageSquare },
+  { label: 'Image Library', href: '/images', icon: FiFile },
   { label: 'Settings', href: '/settings', icon: FiSettings },
   { label: 'Analytics', href: '/analytics', icon: FiBarChart2 },
 ];

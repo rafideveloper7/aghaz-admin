@@ -34,7 +34,24 @@ export interface Product {
   sales: number;
   faqs: { question: string; answer: string }[];
   benefits: string[];
+  rating?: number;
+  reviewCount?: number;
   createdAt: string;
+  updatedAt: string;
+}
+
+export interface Review {
+  _id: string;
+  product: { _id: string; title: string; slug: string };
+  name: string;
+  rating: number;
+  comment: string;
+  image?: string;
+  verified: boolean;
+  approved: boolean;
+  helpful: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface OrderProduct {
@@ -148,6 +165,8 @@ export interface SiteSettings {
     isActive: boolean;
     sortOrder: number;
   }[];
+  reviewsEnabled: boolean;
+  reviewsRequireApproval: boolean;
 }
 
 export interface FooterSocial {
