@@ -123,6 +123,26 @@ export default function OrderDetail({ id }: { id: string }) {
               <p className="text-sm text-gray-600 bg-yellow-50 p-4 rounded-lg border border-yellow-100">{order.notes}</p>
             </div>
           )}
+
+          <div className="card p-6">
+            <h2 className="mb-4 text-lg font-semibold text-gray-900">Payment</h2>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <CopyField label="Method" value={order.paymentMethod?.label || 'Cash on Delivery'} />
+              <CopyField label="Payment Status" value={order.paymentStatus || 'unpaid'} />
+              {order.paymentDetails?.accountTitle ? (
+                <CopyField label="Account Title" value={order.paymentDetails.accountTitle} />
+              ) : null}
+              {order.paymentDetails?.accountNumber ? (
+                <CopyField label="Account Number" value={order.paymentDetails.accountNumber} />
+              ) : null}
+              {order.paymentDetails?.iban ? (
+                <CopyField label="IBAN" value={order.paymentDetails.iban} />
+              ) : null}
+              {order.paymentDetails?.paymentReference ? (
+                <CopyField label="Reference" value={order.paymentDetails.paymentReference} />
+              ) : null}
+            </div>
+          </div>
         </div>
 
         {/* Sidebar */}

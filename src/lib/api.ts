@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import { API_URL } from './constants';
 import { useAuthStore } from '@/store/authStore';
-import type { ApiResponse, Product, Category, Order, DashboardStats, HeroSlide, SiteSettings, FooterSocial } from '@/types';
+import type { ApiResponse, Product, Category, Order, DashboardStats, HeroSlide, SiteSettings, FooterSocial, ContactMessage } from '@/types';
 import type { Announcement, CreateAnnouncementData, UpdateAnnouncementData } from '@/types/announcement';
 
 const apiClient: AxiosInstance = axios.create({
@@ -77,6 +77,13 @@ export const ordersApi = {
     apiClient.get<ApiResponse<DashboardStats>>('/api/orders/stats', { params }),
 };
 
+export const contactMessagesApi = {
+  getAll: (params?: { page?: number; limit?: number; search?: string }) =>
+    apiClient.get<ApiResponse<ContactMessage[]>>('/api/contact-messages', { params }),
+  delete: (id: string) =>
+    apiClient.delete<ApiResponse<null>>(`/api/contact-messages/${id}`),
+};
+
 // Upload
 export const uploadApi = {
   uploadImage: (file: File) => {
@@ -145,6 +152,8 @@ export const announcementsApi = {
     apiClient.post<ApiResponse<Announcement>>('/api/announcement', data),
   update: (id: string, data: UpdateAnnouncementData) =>
     apiClient.put<ApiResponse<Announcement>>(`/api/announcement/${id}`, data),
+  toggle: (id: string) =>
+    apiClient.put<ApiResponse<Announcement>>(`/api/announcement/${id}/toggle`),
   delete: (id: string) =>
     apiClient.delete<ApiResponse<void>>(`/api/announcement/${id}`),
 };

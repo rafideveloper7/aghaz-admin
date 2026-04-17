@@ -10,7 +10,7 @@ import {
   useDeleteAnnouncement,
   useToggleAnnouncement 
 } from '@/hooks/useAnnouncements';
-import type { Announcement } from '@/types';
+import type { Announcement } from '@/types/announcement';
 import ConfirmDialog from '@/components/common/ConfirmDialog';
 
 export default function AnnouncementPage() {

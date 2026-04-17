@@ -7,8 +7,8 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-gray-50">
       <Sidebar />
-      <main className="lg:pl-64 pt-16 lg:pt-0">
-        <div className="px-4 py-6 sm:px-6 lg:px-8 max-w-full overflow-x-hidden">
+      <main className="min-h-screen lg:pl-64">
+        <div className="max-w-full overflow-x-hidden px-4 pb-8 pt-20 sm:px-6 lg:px-8 lg:pt-8">
           {children}
         </div>
       </main>

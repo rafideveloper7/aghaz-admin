@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { announcementsApi } from '@/lib/api';
-import type { Announcement } from '@/types';
+import type { CreateAnnouncementData, UpdateAnnouncementData } from '@/types/announcement';
 
 export function useAnnouncements() {
   return useQuery({
@@ -13,7 +13,7 @@ export function useAnnouncements() {
 export function useCreateAnnouncement() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: Record<string, unknown>) => announcementsApi.create(data).then(res => res.data),
+    mutationFn: (data: CreateAnnouncementData) => announcementsApi.create(data).then(res => res.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['announcements'] });
     },
@@ -23,7 +23,7 @@ export function useCreateAnnouncement() {
 export function useUpdateAnnouncement() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Record<string, unknown> }) =>
+    mutationFn: ({ id, data }: { id: string; data: UpdateAnnouncementData }) =>
       announcementsApi.update(id, data).then(res => res.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['announcements'] });

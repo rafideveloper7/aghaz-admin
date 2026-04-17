@@ -53,6 +53,18 @@ export interface Order {
   address: string;
   products: OrderProduct[];
   totalAmount: number;
+  paymentMethod: {
+    code: string;
+    label: string;
+    type: 'cod' | 'wallet' | 'bank' | 'other';
+  };
+  paymentDetails?: {
+    accountTitle?: string;
+    accountNumber?: string;
+    iban?: string;
+    paymentReference?: string;
+  };
+  paymentStatus: 'unpaid' | 'awaiting_verification' | 'paid';
   status: 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled';
   notes?: string;
   createdAt: string;
@@ -122,6 +134,20 @@ export interface SiteSettings {
   contactPhone: string;
   contactAddress: string;
   whatsappNumber: string;
+  workingHours: string;
+  formSubmitEmail: string;
+  orderSuccessMessage: string;
+  paymentMethods: {
+    code: string;
+    label: string;
+    type: 'cod' | 'wallet' | 'bank' | 'other';
+    accountTitle?: string;
+    accountNumber?: string;
+    iban?: string;
+    instructions?: string;
+    isActive: boolean;
+    sortOrder: number;
+  }[];
 }
 
 export interface FooterSocial {
@@ -134,4 +160,15 @@ export interface FooterSocial {
   sortOrder: number;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface ContactMessage {
+  _id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  subject?: string;
+  message: string;
+  expiresAt: string;
+  createdAt: string;
 }
