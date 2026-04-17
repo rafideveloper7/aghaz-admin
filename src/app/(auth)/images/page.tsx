@@ -1,27 +1,39 @@
 'use client';
 
 import { useState } from 'react';
-import { FiImage, FiTrash2, FiSearch, FiFolder, FiFile, FiExternalLink, FiCheckSquare, FiSquare } from 'react-icons/fi';
+import { FiImage, FiTrash2, FiSearch, FiFolder, FiExternalLink, FiCheckSquare, FiSquare, FiBarChart2, FiHardDrive, FiInbox, FiCheckCircle, FiClock } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import ConfirmDialog from '@/components/common/ConfirmDialog';
-import { useImages, useDeleteImage, useBulkDeleteImages } from '@/hooks/useImages';
+import { useImages, useImageStats, useDeleteImage, useBulkDeleteImages } from '@/hooks/useImages';
 import { cn } from '@/lib/utils';
+
+function formatBytes(bytes: number) {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
 
 export default function ImagesPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [folder, setFolder] = useState('aghaz');
+  const [usageFilter, setUsageFilter] = useState<'all' | 'used' | 'unused'>('all');
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const limit = 20;
 
-  const { data, isLoading } = useImages({ folder, page, limit });
+  const { data, isLoading } = useImages({ folder, page, limit, usage: usageFilter });
+  const { data: statsData, isLoading: statsLoading } = useImageStats();
   const deleteMutation = useDeleteImage();
   const bulkDeleteMutation = useBulkDeleteImages();
 
   const images = data?.files || [];
   const pagination = data?.pagination;
+  const stats = statsData?.data;
+
   const totalPages = pagination ? Math.ceil(pagination.total / pagination.limit) : 0;
 
   const filteredImages = images.filter(img =>
@@ -74,20 +86,121 @@ export default function ImagesPage() {
         <p className="text-sm text-gray-500">Manage images uploaded to ImageKit. Delete unused images to free storage.</p>
       </div>
 
+      {/* Stats Cards */}
+      {!statsLoading && stats && (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="card p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-50 rounded-lg">
+                <FiImage className="h-5 w-5 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-gray-900">{stats.totalImages}</p>
+                <p className="text-xs text-gray-500">Total Images</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="card p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-green-50 rounded-lg">
+                <FiCheckCircle className="h-5 w-5 text-green-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-gray-900">{stats.usedImages}</p>
+                <p className="text-xs text-gray-500">In Use</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="card p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-amber-50 rounded-lg">
+                <FiInbox className="h-5 w-5 text-amber-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-gray-900">{stats.unusedImages}</p>
+                <p className="text-xs text-gray-500">Unused</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="card p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-purple-50 rounded-lg">
+                <FiHardDrive className="h-5 w-5 text-purple-600" />
+              </div>
+              <div>
+                <p className="text-lg font-bold text-gray-900 truncate">{formatBytes(stats.totalSize)}</p>
+                <p className="text-xs text-gray-500">Total Size</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Stats loading skeleton */}
+      {statsLoading && (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="card p-4 animate-pulse">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gray-200 rounded-lg w-10 h-10" />
+                <div className="space-y-2">
+                  <div className="h-6 w-12 bg-gray-200 rounded" />
+                  <div className="h-3 w-16 bg-gray-200 rounded" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Filters */}
       <div className="card p-4">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3">
+          {/* Search */}
           <div className="relative flex-1 max-w-md">
             <FiSearch className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
               placeholder="Search by name or file ID..."
               className="input-field pl-9"
             />
           </div>
-          <div className="flex gap-2">
+
+          {/* Filter Row */}
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex gap-2 flex-wrap">
+              {(['all', 'used', 'unused'] as const).map((f) => (
+                <button
+                  key={f}
+                  onClick={() => {
+                    setUsageFilter(f);
+                    setPage(1);
+                  }}
+                  className={cn(
+                    'px-3 py-2 rounded-lg text-xs font-medium transition-colors capitalize flex items-center gap-1.5',
+                    usageFilter === f
+                      ? 'bg-primary-100 text-primary-700'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  )}
+                >
+                  {f === 'all' && <FiImage size={12} />}
+                  {f === 'used' && <FiCheckCircle size={12} />}
+                  {f === 'unused' && <FiClock size={12} />}
+                  {f.charAt(0).toUpperCase() + f.slice(1)}
+                  {f === 'used' && stats && ` (${stats.usedImages})`}
+                  {f === 'unused' && stats && ` (${stats.unusedImages})`}
+                </button>
+              ))}
+            </div>
+
             <div className="flex items-center gap-2">
               <FiFolder className="text-gray-400" />
               <select
@@ -96,7 +209,7 @@ export default function ImagesPage() {
                   setFolder(e.target.value);
                   setPage(1);
                 }}
-                className="input-field w-auto"
+                className="input-field w-auto text-sm"
               >
                 <option value="aghaz">aghaz</option>
                 <option value="aghaz/products">aghaz/products</option>
@@ -140,7 +253,7 @@ export default function ImagesPage() {
       {!isLoading && filteredImages.length === 0 && (
         <div className="card p-12 text-center">
           <FiImage className="mx-auto mb-3 h-12 w-12 text-gray-300" />
-          <p className="text-sm text-gray-500">No images found in this folder.</p>
+          <p className="text-sm text-gray-500">No images found matching your criteria.</p>
         </div>
       )}
 
@@ -153,11 +266,27 @@ export default function ImagesPage() {
                 'group relative rounded-lg overflow-hidden border-2 transition-all',
                 selectedImages.includes(image.fileId)
                   ? 'border-primary-500 ring-2 ring-primary-200'
-                  : 'border-transparent hover:border-gray-300'
+                  : image.isUsed
+                    ? 'border-transparent hover:border-green-300'
+                    : 'border-transparent hover:border-red-300'
               )}
             >
+              {/* Usage Badge */}
+              <div className="absolute top-2 left-2 z-10">
+                <span
+                  className={cn(
+                    'px-2 py-0.5 text-[10px] font-medium rounded-full',
+                    image.isUsed
+                      ? 'bg-green-500 text-white'
+                      : 'bg-red-500 text-white'
+                  )}
+                >
+                  {image.isUsed ? 'Used' : 'Unused'}
+                </span>
+              </div>
+
               {/* Select Checkbox */}
-              <div className="absolute left-2 top-2 z-10">
+              <div className="absolute right-2 top-2 z-10">
                 <button
                   type="button"
                   onClick={() => handleSelect(image.fileId)}

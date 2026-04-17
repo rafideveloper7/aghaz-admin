@@ -172,8 +172,10 @@ export const reviewsApi = {
 
 // ImageKit Management
 export const imagesApi = {
-  getAll: (params?: { folder?: string; page?: number; limit?: number }) =>
+  getAll: (params?: { folder?: string; page?: number; limit?: number; usage?: string }) =>
     apiClient.get<ApiResponse<{ files: any[]; pagination: { page: number; limit: number; total: number } }>>('/api/images', { params }),
+  getStats: () =>
+    apiClient.get<ApiResponse<{ totalImages: number; usedImages: number; unusedImages: number; totalSize: number; usedSize: number; unusedSize: number; folderStats: Record<string, { count: number; size: number }> }>>('/api/images/stats'),
   delete: (fileId: string) =>
     apiClient.delete<ApiResponse<null>>(`/api/images/${fileId}`),
   bulkDelete: (fileIds: string[]) =>

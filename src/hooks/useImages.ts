@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { imagesApi } from '@/lib/api';
 
-export const useImages = (params?: { folder?: string; page?: number; limit?: number }) => {
+export const useImages = (params?: { folder?: string; page?: number; limit?: number; usage?: string }) => {
   const queryKey = ['admin-images', params];
 
   return useQuery({
@@ -13,6 +13,16 @@ export const useImages = (params?: { folder?: string; page?: number; limit?: num
   });
 };
 
+export const useImageStats = () => {
+  return useQuery({
+    queryKey: ['admin-image-stats'],
+    queryFn: async () => {
+      const response = await imagesApi.getStats();
+      return response.data;
+    },
+  });
+};
+
 export const useDeleteImage = () => {
   const queryClient = useQueryClient();
 
@@ -20,6 +30,7 @@ export const useDeleteImage = () => {
     mutationFn: (fileId: string) => imagesApi.delete(fileId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-images'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-image-stats'] });
     },
   });
 };
@@ -31,6 +42,7 @@ export const useBulkDeleteImages = () => {
     mutationFn: (fileIds: string[]) => imagesApi.bulkDelete(fileIds),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-images'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-image-stats'] });
     },
   });
 };
