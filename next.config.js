@@ -1,31 +1,23 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   typescript: {
-    ignoreBuildErrors: true, // Temporary fix
+    ignoreBuildErrors: true,
   },
   eslint: {
-    ignoreDuringBuilds: true, // Also ignore ESLint errors
+    ignoreDuringBuilds: true,
   },
   images: {
-    unoptimized: true,
+    unoptimized: true, // Bypass Next.js image optimization entirely (serve images directly from ImageKit)
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'ik.imagekit.io',
         pathname: '/**',
       },
-      {
-        protocol: 'https',
-        hostname: '*.ik.imagekit.io',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'placehold.co',
-        pathname: '/**',
-      },
     ],
   },
 };
+
+console.log('🔧 Next.js config loaded - ImageKit remote patterns configured');
 
 module.exports = nextConfig;
