@@ -36,10 +36,7 @@ export default function ImageUpload({ images, onChange }: ImageUploadProps) {
 
         const response = await uploadApi.uploadImage(file);
         if (response.data.success) {
-          let imageUrl = response.data.data.url;
-          if (!imageUrl.startsWith('http')) {
-            imageUrl = `https://ik.imagekit.io/eiawiheru${imageUrl}`;
-          }
+          const imageUrl = response.data.data.url;
           results.push(imageUrl);
         }
       }
