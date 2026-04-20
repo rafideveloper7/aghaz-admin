@@ -6,8 +6,9 @@ import type { Announcement, CreateAnnouncementData, UpdateAnnouncementData } fro
 
 const apiClient: AxiosInstance = axios.create({
   baseURL: API_URL,
-  headers: { 'Content-Type': 'application/json' },
   timeout: 30000,
+  // Do NOT set default Content-Type; let axios set automatically based on data type
+  // For FormData, the browser will set multipart/form-data with boundary
 });
 
 apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
@@ -89,16 +90,12 @@ export const uploadApi = {
   uploadImage: (file: File) => {
     const formData = new FormData();
     formData.append('image', file);
-    return apiClient.post<ApiResponse<{ url: string; fileId: string }>>('/api/upload/image', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
+    return apiClient.post<ApiResponse<{ url: string; fileId: string }>>('/api/upload/image', formData);
   },
   uploadImages: (files: File[]) => {
     const formData = new FormData();
     files.forEach(file => formData.append('images', file));
-    return apiClient.post<ApiResponse<{ url: string; fileId: string }[]>>('/api/upload/images', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
+    return apiClient.post<ApiResponse<{ url: string; fileId: string }[]>>('/api/upload/images', formData);
   },
   deleteImage: (fileId: string) =>
     apiClient.delete<ApiResponse<null>>(`/api/upload/${fileId}`),
