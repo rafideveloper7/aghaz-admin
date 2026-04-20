@@ -7,17 +7,17 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
-    unoptimized: true, // Bypass Next.js image optimization entirely (serve images directly from ImageKit)
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'ik.imagekit.io',
+        hostname: 'res.cloudinary.com',
         pathname: '/**',
       },
     ],
   },
 };
 
-console.log('🔧 Next.js config loaded - ImageKit remote patterns configured');
+console.log('🔧 Next.js config loaded - Cloudinary remote patterns configured');
 
 module.exports = nextConfig;
