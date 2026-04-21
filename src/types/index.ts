@@ -126,6 +126,10 @@ export interface HeroSlide {
   desktopSubtitle?: string;
   desktopCtaText?: string;
   desktopCtaLink?: string;
+  rightSideMediaType?: 'image' | 'video' | 'gif' | 'card' | 'none';
+  rightSideMediaUrl?: string;
+  rightSideCardTitle?: string;
+  rightSideCardSubtitle?: string;
   isActive: boolean;
   sortOrder: number;
   createdAt: string;

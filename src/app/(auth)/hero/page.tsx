@@ -37,12 +37,16 @@ export default function HeroSlidesPage() {
     desktopSubtitle: '',
     desktopCtaText: '',
     desktopCtaLink: '',
+    rightSideMediaType: 'none',
+    rightSideMediaUrl: '',
+    rightSideCardTitle: '',
+    rightSideCardSubtitle: '',
     isActive: true,
   });
 
   const handleOpenCreate = () => {
     setEditingId(null);
-    setForm({ title: '', subtitle: '', image: '', mobileBg: '', desktopBg: '', ctaText: 'Shop Now', ctaLink: '/shop', mobileTitle: '', mobileSubtitle: '', mobileCtaText: '', mobileCtaLink: '', desktopTitle: '', desktopSubtitle: '', desktopCtaText: '', desktopCtaLink: '', isActive: true });
+    setForm({ title: '', subtitle: '', image: '', mobileBg: '', desktopBg: '', ctaText: 'Shop Now', ctaLink: '/shop', mobileTitle: '', mobileSubtitle: '', mobileCtaText: '', mobileCtaLink: '', desktopTitle: '', desktopSubtitle: '', desktopCtaText: '', desktopCtaLink: '', rightSideMediaType: 'none', rightSideMediaUrl: '', rightSideCardTitle: '', rightSideCardSubtitle: '', isActive: true });
     setShowModal(true);
   };
 
@@ -64,12 +68,16 @@ export default function HeroSlidesPage() {
       desktopSubtitle: slide.desktopSubtitle || '',
       desktopCtaText: slide.desktopCtaText || '',
       desktopCtaLink: slide.desktopCtaLink || '',
+      rightSideMediaType: slide.rightSideMediaType || 'none',
+      rightSideMediaUrl: slide.rightSideMediaUrl || '',
+      rightSideCardTitle: slide.rightSideCardTitle || '',
+      rightSideCardSubtitle: slide.rightSideCardSubtitle || '',
       isActive: slide.isActive,
     });
     setShowModal(true);
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: 'main' | 'mobile' | 'desktop') => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: 'main' | 'mobile' | 'desktop' | 'right') => {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(field);
@@ -78,7 +86,8 @@ export default function HeroSlidesPage() {
       const url = res.data.data.url;
       if (field === 'main') setForm(prev => ({ ...prev, image: url }));
       else if (field === 'mobile') setForm(prev => ({ ...prev, mobileBg: url }));
-      else setForm(prev => ({ ...prev, desktopBg: url }));
+      else if (field === 'desktop') setForm(prev => ({ ...prev, desktopBg: url }));
+      else if (field === 'right') setForm(prev => ({ ...prev, rightSideMediaUrl: url }));
       toast.success(`${field} image uploaded`);
     } catch {
       toast.error('Upload failed');
@@ -420,6 +429,60 @@ export default function HeroSlidesPage() {
                     </div>
                     <p className="text-xs text-gray-500 mb-3">Shown on screens 768px and larger. Falls back to main image if empty.</p>
                     <ImageField label="" value={form.desktopBg} onChange={url => setForm(prev => ({ ...prev, desktopBg: url }))} field="desktop" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Side Hero (Desktop Only) */}
+              <div className="space-y-4">
+                <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">Right Side Image (Desktop Only)</h4>
+                <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                  <p className="text-xs text-orange-700 mb-4">🖥️ Image shown on right side of hero on desktop screens (≥ 1024px). Hidden on mobile.</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Display Type</label>
+                      <select
+                        value={form.rightSideMediaType}
+                        onChange={e => setForm(prev => ({ ...prev, rightSideMediaType: e.target.value }))}
+                        className="input-field"
+                      >
+                        <option value="none">No Right Side Content</option>
+                        <option value="image">Show Image</option>
+                        <option value="card">Show Card with Text</option>
+                      </select>
+                    </div>
+                    {form.rightSideMediaType === 'image' && (
+                      <div>
+                        <ImageField 
+                          label="Right Side Image" 
+                          value={form.rightSideMediaUrl} 
+                          onChange={url => setForm(prev => ({ ...prev, rightSideMediaUrl: url }))} 
+                          field="right" 
+                        />
+                      </div>
+                    )}
+                    {form.rightSideMediaType === 'card' && (
+                      <>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1.5">Card Title</label>
+                          <input
+                            value={form.rightSideCardTitle}
+                            onChange={e => setForm(prev => ({ ...prev, rightSideCardTitle: e.target.value }))}
+                            className="input-field"
+                            placeholder="Special Offer"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1.5">Card Subtitle</label>
+                          <input
+                            value={form.rightSideCardSubtitle}
+                            onChange={e => setForm(prev => ({ ...prev, rightSideCardSubtitle: e.target.value }))}
+                            className="input-field"
+                            placeholder="Limited time offer"
+                          />
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
