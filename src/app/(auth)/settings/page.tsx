@@ -41,6 +41,9 @@ export default function SettingsPage() {
     reviewsEnabled: true,
     reviewsRequireApproval: true,
     paymentMethods: [createPaymentMethod({ code: 'cod', label: 'Cash on Delivery', type: 'cod', instructions: 'Pay when you receive your order.', sortOrder: 0 })],
+    newArrivalsHero: { title: 'New Arrivals', subtitle: 'Be the first to discover our latest collection', bgColor: '#7c3aed', bgGradient: 'from-violet-600 via-purple-600 to-fuchsia-600', image: '' },
+    dealsHero: { title: 'Flash Deals', subtitle: 'Grab these amazing deals before they are gone!', bgColor: '#ea580c', bgGradient: 'from-red-600 via-orange-500 to-yellow-500', image: '', timerEndTime: '' },
+    aboutHero: { title: 'About Aghaz', subtitle: 'Your trusted destination for premium smart gadgets', bgColor: '#111827', bgGradient: 'from-gray-900 via-gray-800 to-emerald-900', image: '' },
   });
 
    useEffect(() => {
@@ -60,6 +63,9 @@ export default function SettingsPage() {
          paymentMethods: settings.paymentMethods?.length
            ? settings.paymentMethods.map((method, index) => createPaymentMethod({ ...method, sortOrder: index }))
            : [createPaymentMethod({ code: 'cod', label: 'Cash on Delivery', type: 'cod', instructions: 'Pay when you receive your order.', sortOrder: 0 })],
+         newArrivalsHero: settings.newArrivalsHero || { title: 'New Arrivals', subtitle: 'Be the first to discover our latest collection', bgColor: '#7c3aed', bgGradient: 'from-violet-600 via-purple-600 to-fuchsia-600', image: '' },
+         dealsHero: settings.dealsHero || { title: 'Flash Deals', subtitle: 'Grab these amazing deals before they are gone!', bgColor: '#ea580c', bgGradient: 'from-red-600 via-orange-500 to-yellow-500', image: '', timerEndTime: '' },
+         aboutHero: settings.aboutHero || { title: 'About Aghaz', subtitle: 'Your trusted destination for premium smart gadgets', bgColor: '#111827', bgGradient: 'from-gray-900 via-gray-800 to-emerald-900', image: '' },
        });
      }
    }, [settings]);
@@ -460,6 +466,88 @@ export default function SettingsPage() {
               />
               <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
             </label>
+          </div>
+        </div>
+      </div>
+
+      {/* Page Hero Customizations */}
+      <div className="card p-4 sm:p-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Page Hero Settings</h2>
+        <p className="text-sm text-gray-500 mb-4">Customize hero sections for different pages</p>
+
+        {/* New Arrivals Hero */}
+        <div className="mb-6 p-4 bg-violet-50 rounded-xl border border-violet-200">
+          <h3 className="font-semibold text-violet-800 mb-3">New Arrivals Page</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Title</label>
+              <input value={form.newArrivalsHero?.title || ''} onChange={e => setForm(prev => ({ ...prev, newArrivalsHero: { ...prev.newArrivalsHero, title: e.target.value } }))} className="input-field" placeholder="New Arrivals" />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Background Color</label>
+              <input type="color" value={form.newArrivalsHero?.bgColor || '#7c3aed'} onChange={e => setForm(prev => ({ ...prev, newArrivalsHero: { ...prev.newArrivalsHero, bgColor: e.target.value } }))} className="h-10 w-full rounded-lg border cursor-pointer" />
+            </div>
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-medium text-gray-700 mb-1">Gradient</label>
+              <select value={form.newArrivalsHero?.bgGradient || 'from-violet-600 via-purple-600 to-fuchsia-600'} onChange={e => setForm(prev => ({ ...prev, newArrivalsHero: { ...prev.newArrivalsHero, bgGradient: e.target.value } }))} className="input-field">
+                <option value="from-violet-600 via-purple-600 to-fuchsia-600">Purple to Pink</option>
+                <option value="from-blue-600 via-cyan-500 to-teal-600">Blue to Teal</option>
+                <option value="from-emerald-600 via-green-500 to-lime-600">Green to Lime</option>
+                <option value="from-orange-600 via-red-500 to-pink-600">Orange to Pink</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Deals Hero */}
+        <div className="mb-6 p-4 bg-red-50 rounded-xl border border-red-200">
+          <h3 className="font-semibold text-red-800 mb-3">Flash Deals Page</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Title</label>
+              <input value={form.dealsHero?.title || ''} onChange={e => setForm(prev => ({ ...prev, dealsHero: { ...prev.dealsHero, title: e.target.value } }))} className="input-field" placeholder="Flash Deals" />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Background Color</label>
+              <input type="color" value={form.dealsHero?.bgColor || '#ea580c'} onChange={e => setForm(prev => ({ ...prev, dealsHero: { ...prev.dealsHero, bgColor: e.target.value } }))} className="h-10 w-full rounded-lg border cursor-pointer" />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Deal End Time</label>
+              <input type="datetime-local" value={form.dealsHero?.timerEndTime || ''} onChange={e => setForm(prev => ({ ...prev, dealsHero: { ...prev.dealsHero, timerEndTime: e.target.value } }))} className="input-field" />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Gradient</label>
+              <select value={form.dealsHero?.bgGradient || 'from-red-600 via-orange-500 to-yellow-500'} onChange={e => setForm(prev => ({ ...prev, dealsHero: { ...prev.dealsHero, bgGradient: e.target.value } }))} className="input-field">
+                <option value="from-red-600 via-orange-500 to-yellow-500">Red to Yellow</option>
+                <option value="from-orange-600 via-red-500 to-pink-600">Orange to Pink</option>
+                <option value="from-rose-600 via-pink-500 to-purple-600">Rose to Purple</option>
+                <option value="from-amber-600 via-orange-500 to-yellow-400">Amber to Yellow</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* About Hero */}
+        <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
+          <h3 className="font-semibold text-gray-800 mb-3">About Page</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Title</label>
+              <input value={form.aboutHero?.title || ''} onChange={e => setForm(prev => ({ ...prev, aboutHero: { ...prev.aboutHero, title: e.target.value } }))} className="input-field" placeholder="About Aghaz" />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Background Color</label>
+              <input type="color" value={form.aboutHero?.bgColor || '#111827'} onChange={e => setForm(prev => ({ ...prev, aboutHero: { ...prev.aboutHero, bgColor: e.target.value } }))} className="h-10 w-full rounded-lg border cursor-pointer" />
+            </div>
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-medium text-gray-700 mb-1">Gradient</label>
+              <select value={form.aboutHero?.bgGradient || 'from-gray-900 via-gray-800 to-emerald-900'} onChange={e => setForm(prev => ({ ...prev, aboutHero: { ...prev.aboutHero, bgGradient: e.target.value } }))} className="input-field">
+                <option value="from-gray-900 via-gray-800 to-emerald-900">Gray to Emerald</option>
+                <option value="from-gray-900 via-slate-800 to-blue-900">Gray to Blue</option>
+                <option value="from-slate-900 via-gray-900 to-zinc-900">Slate to Zinc</option>
+                <option value="from-zinc-900 via-neutral-900 to-stone-900">Zinc to Stone</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>

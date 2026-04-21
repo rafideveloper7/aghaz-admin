@@ -147,6 +147,15 @@ export interface Announcement {
   updatedAt: string;
 }
 
+export interface PageHero {
+  title?: string;
+  subtitle?: string;
+  bgColor?: string;
+  bgGradient?: string;
+  image?: string;
+  timerEndTime?: string;
+}
+
 export interface SiteSettings {
   _id: string;
   logo: string;
@@ -171,6 +180,9 @@ export interface SiteSettings {
   }[];
   reviewsEnabled: boolean;
   reviewsRequireApproval: boolean;
+  newArrivalsHero?: PageHero;
+  dealsHero?: PageHero;
+  aboutHero?: PageHero;
 }
 
 export interface FooterSocial {
