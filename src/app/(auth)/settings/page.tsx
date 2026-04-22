@@ -41,34 +41,36 @@ export default function SettingsPage() {
     reviewsEnabled: true,
     reviewsRequireApproval: true,
     paymentMethods: [createPaymentMethod({ code: 'cod', label: 'Cash on Delivery', type: 'cod', instructions: 'Pay when you receive your order.', sortOrder: 0 })],
-    newArrivalsHero: { title: 'New Arrivals', subtitle: 'Be the first to discover our latest collection', bgColor: '#7c3aed', bgGradient: 'from-violet-600 via-purple-600 to-fuchsia-600', image: '' },
-    dealsHero: { title: 'Flash Deals', subtitle: 'Grab these amazing deals before they are gone!', bgColor: '#ea580c', bgGradient: 'from-red-600 via-orange-500 to-yellow-500', image: '', timerEndTime: '' },
-    aboutHero: { title: 'About Aghaz', subtitle: 'Your trusted destination for premium smart gadgets', bgColor: '#111827', bgGradient: 'from-gray-900 via-gray-800 to-emerald-900', image: '' },
+    newArrivalsHero: { title: 'New Arrivals', subtitle: 'Be the first to discover our latest collection', bgColor: '#7c3aed', bgGradient: 'from-violet-600 via-purple-600 to-fuchsia-600', bgImage: '', image: '', titleColor: '#ffffff', subtitleColor: '#ffffff', titleFontSize: 48, subtitleFontSize: 18, rightSideImage: '' },
+    dealsHero: { title: 'Flash Deals', subtitle: 'Grab these amazing deals before they are gone!', bgColor: '#ea580c', bgGradient: 'from-red-600 via-orange-500 to-yellow-500', bgImage: '', image: '', timerEndTime: '', titleColor: '#ffffff', subtitleColor: '#ffffff', titleFontSize: 48, subtitleFontSize: 18, rightSideImage: '' },
+    aboutHero: { title: 'About Aghaz', subtitle: 'Your trusted destination for premium smart gadgets', bgColor: '#111827', bgGradient: 'from-gray-900 via-gray-800 to-emerald-900', bgImage: '', image: '', titleColor: '#ffffff', subtitleColor: '#ffffff', titleFontSize: 48, subtitleFontSize: 18, rightSideImage: '' },
+    shopHero: { title: 'All Products', subtitle: 'Discover amazing deals on our curated collection', bgColor: '#1a1a2e', bgGradient: 'from-purple-700 via-indigo-600 to-blue-500', bgImage: '', image: '', titleColor: '#ffffff', subtitleColor: '#ffffff', titleFontSize: 48, subtitleFontSize: 18, rightSideImage: '' },
   });
 
-   useEffect(() => {
-     if (settings) {
-       setForm({
-         logo: settings.logo || '',
-         logoWidth: settings.logoWidth || 32,
-         contactEmail: settings.contactEmail || '',
-         contactPhone: settings.contactPhone || '',
-         contactAddress: settings.contactAddress || '',
-         whatsappNumber: settings.whatsappNumber || '',
-         workingHours: settings.workingHours || '',
-         formSubmitEmail: settings.formSubmitEmail || '',
-         orderSuccessMessage: settings.orderSuccessMessage || '',
-         reviewsEnabled: settings.reviewsEnabled !== false,
-         reviewsRequireApproval: settings.reviewsRequireApproval !== false,
-         paymentMethods: settings.paymentMethods?.length
-           ? settings.paymentMethods.map((method, index) => createPaymentMethod({ ...method, sortOrder: index }))
-           : [createPaymentMethod({ code: 'cod', label: 'Cash on Delivery', type: 'cod', instructions: 'Pay when you receive your order.', sortOrder: 0 })],
-         newArrivalsHero: settings.newArrivalsHero || { title: 'New Arrivals', subtitle: 'Be the first to discover our latest collection', bgColor: '#7c3aed', bgGradient: 'from-violet-600 via-purple-600 to-fuchsia-600', image: '' },
-         dealsHero: settings.dealsHero || { title: 'Flash Deals', subtitle: 'Grab these amazing deals before they are gone!', bgColor: '#ea580c', bgGradient: 'from-red-600 via-orange-500 to-yellow-500', image: '', timerEndTime: '' },
-         aboutHero: settings.aboutHero || { title: 'About Aghaz', subtitle: 'Your trusted destination for premium smart gadgets', bgColor: '#111827', bgGradient: 'from-gray-900 via-gray-800 to-emerald-900', image: '' },
-       });
-     }
-   }, [settings]);
+useEffect(() => {
+      if (settings) {
+        setForm({
+          logo: settings.logo || '',
+          logoWidth: settings.logoWidth || 32,
+          contactEmail: settings.contactEmail || '',
+          contactPhone: settings.contactPhone || '',
+          contactAddress: settings.contactAddress || '',
+          whatsappNumber: settings.whatsappNumber || '',
+          workingHours: settings.workingHours || '',
+          formSubmitEmail: settings.formSubmitEmail || '',
+          orderSuccessMessage: settings.orderSuccessMessage || '',
+          reviewsEnabled: settings.reviewsEnabled !== false,
+          reviewsRequireApproval: settings.reviewsRequireApproval !== false,
+          paymentMethods: settings.paymentMethods?.length
+            ? settings.paymentMethods.map((method, index) => createPaymentMethod({ ...method, sortOrder: index }))
+            : [createPaymentMethod({ code: 'cod', label: 'Cash on Delivery', type: 'cod', instructions: 'Pay when you receive your order.', sortOrder: 0 })],
+          newArrivalsHero: settings.newArrivalsHero || { title: 'New Arrivals', subtitle: 'Be the first to discover our latest collection', bgColor: '#7c3aed', bgGradient: 'from-violet-600 via-purple-600 to-fuchsia-600', bgImage: '', image: '', titleColor: '#ffffff', subtitleColor: '#ffffff', titleFontSize: 48, subtitleFontSize: 18, rightSideImage: '' },
+          dealsHero: settings.dealsHero || { title: 'Flash Deals', subtitle: 'Grab these amazing deals before they are gone!', bgColor: '#ea580c', bgGradient: 'from-red-600 via-orange-500 to-yellow-500', bgImage: '', image: '', timerEndTime: '', titleColor: '#ffffff', subtitleColor: '#ffffff', titleFontSize: 48, subtitleFontSize: 18, rightSideImage: '' },
+          aboutHero: settings.aboutHero || { title: 'About Aghaz', subtitle: 'Your trusted destination for premium smart gadgets', bgColor: '#111827', bgGradient: 'from-gray-900 via-gray-800 to-emerald-900', bgImage: '', image: '', titleColor: '#ffffff', subtitleColor: '#ffffff', titleFontSize: 48, subtitleFontSize: 18, rightSideImage: '' },
+          shopHero: settings.shopHero || { title: 'All Products', subtitle: 'Discover amazing deals on our curated collection', bgColor: '#1a1a2e', bgGradient: 'from-purple-700 via-indigo-600 to-blue-500', bgImage: '', image: '', titleColor: '#ffffff', subtitleColor: '#ffffff', titleFontSize: 48, subtitleFontSize: 18, rightSideImage: '' },
+        });
+      }
+    }, [settings]);
 
   const updatePaymentMethod = (index: number, key: keyof PaymentMethodForm, value: string | boolean | number) => {
     setForm((prev) => ({

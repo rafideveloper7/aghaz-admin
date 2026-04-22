@@ -156,8 +156,14 @@ export interface PageHero {
   subtitle?: string;
   bgColor?: string;
   bgGradient?: string;
+  bgImage?: string;
   image?: string;
   timerEndTime?: string;
+  titleColor?: string;
+  subtitleColor?: string;
+  titleFontSize?: number;
+  subtitleFontSize?: number;
+  rightSideImage?: string;
 }
 
 export interface SiteSettings {
