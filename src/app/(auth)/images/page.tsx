@@ -88,7 +88,7 @@ export default function ImagesPage() {
 
       {/* Stats Cards */}
       {!statsLoading && stats && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
           <div className="card p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-50 rounded-lg">
@@ -133,6 +133,30 @@ export default function ImagesPage() {
               <div>
                 <p className="text-lg font-bold text-gray-900 truncate">{formatBytes(stats.totalSize)}</p>
                 <p className="text-xs text-gray-500">Total Size</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="card p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-green-100 rounded-lg">
+                <FiCheckCircle className="h-5 w-5 text-green-700" />
+              </div>
+              <div>
+                <p className="text-lg font-bold text-gray-900 truncate">{formatBytes(stats.usedSize || 0)}</p>
+                <p className="text-xs text-gray-500">Used Size</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="card p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-amber-100 rounded-lg">
+                <FiInbox className="h-5 w-5 text-amber-700" />
+              </div>
+              <div>
+                <p className="text-lg font-bold text-gray-900 truncate">{formatBytes(stats.unusedSize || 0)}</p>
+                <p className="text-xs text-gray-500">Unused Size</p>
               </div>
             </div>
           </div>
