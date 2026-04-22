@@ -29,6 +29,10 @@ export interface Product {
   stock: number;
   isActive: boolean;
   isFeatured: boolean;
+  isHot: boolean;
+  isDeal: boolean;
+  isOffer: boolean;
+  isNewArrival: boolean;
   sortOrder: number;
   views: number;
   sales: number;
@@ -183,6 +187,7 @@ export interface SiteSettings {
   newArrivalsHero?: PageHero;
   dealsHero?: PageHero;
   aboutHero?: PageHero;
+  shopHero?: PageHero;
 }
 
 export interface FooterSocial {

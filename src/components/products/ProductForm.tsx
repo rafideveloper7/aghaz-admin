@@ -22,6 +22,10 @@ const productSchema = z.object({
   tags: z.string().min(1, 'At least one tag is required'),
   stock: z.coerce.number().min(0, 'Stock must be positive'),
   isFeatured: z.boolean().default(false),
+  isHot: z.boolean().default(false),
+  isDeal: z.boolean().default(false),
+  isOffer: z.boolean().default(false),
+  isNewArrival: z.boolean().default(false),
   sortOrder: z.coerce.number().default(0),
   benefits: z.string().min(1, 'At least one benefit is required'),
   videoUrl: z.string().url('Invalid URL').optional().or(z.literal('')),
@@ -63,6 +67,10 @@ export default function ProductForm({ product }: ProductFormProps) {
       tags: product?.tags?.join(', ') || '',
       stock: product?.stock || 0,
       isFeatured: product?.isFeatured || false,
+      isHot: product?.isHot || false,
+      isDeal: product?.isDeal || false,
+      isOffer: product?.isOffer || false,
+      isNewArrival: product?.isNewArrival || false,
       sortOrder: product?.sortOrder || 0,
       benefits: product?.benefits?.join('\n') || '',
       videoUrl: product?.videoUrl || '',
@@ -95,6 +103,10 @@ export default function ProductForm({ product }: ProductFormProps) {
           tags: (product.tags || []).join(', '),
           stock: product.stock || 0,
           isFeatured: product.isFeatured || false,
+          isHot: product.isHot || false,
+          isDeal: product.isDeal || false,
+          isOffer: product.isOffer || false,
+          isNewArrival: product.isNewArrival || false,
           sortOrder: product.sortOrder || 0,
           benefits: (product.benefits || []).join('\n'),
           videoUrl: product.videoUrl || '',
@@ -112,6 +124,10 @@ export default function ProductForm({ product }: ProductFormProps) {
         if (JSON.stringify(processedData.tags) !== JSON.stringify(original.tags)) changes.tags = processedData.tags;
         if (processedData.stock !== original.stock) changes.stock = processedData.stock;
         if (processedData.isFeatured !== original.isFeatured) changes.isFeatured = processedData.isFeatured;
+        if (processedData.isHot !== original.isHot) changes.isHot = processedData.isHot;
+        if (processedData.isDeal !== original.isDeal) changes.isDeal = processedData.isDeal;
+        if (processedData.isOffer !== original.isOffer) changes.isOffer = processedData.isOffer;
+        if (processedData.isNewArrival !== original.isNewArrival) changes.isNewArrival = processedData.isNewArrival;
         if (processedData.sortOrder !== original.sortOrder) changes.sortOrder = processedData.sortOrder;
         if (JSON.stringify(processedData.benefits) !== JSON.stringify(original.benefits)) changes.benefits = processedData.benefits;
         if (processedData.videoUrl !== original.videoUrl) changes.videoUrl = processedData.videoUrl;
@@ -245,6 +261,49 @@ export default function ProductForm({ product }: ProductFormProps) {
                   className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                 />
                 <label htmlFor="isFeatured" className="text-sm font-medium text-gray-700">Featured Product</label>
+              </div>
+
+              <div className="border-t pt-4 mt-4">
+                <h3 className="text-sm font-semibold text-gray-900 mb-3">Display Sections</h3>
+                <p className="text-xs text-gray-500 mb-3">Select which sections this product should appear in on the homepage</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="flex items-center gap-2">
+                    <input
+                      {...register('isHot')}
+                      type="checkbox"
+                      id="isHot"
+                      className="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                    />
+                    <label htmlFor="isHot" className="text-sm text-gray-700">🔥 Hot Products</label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      {...register('isDeal')}
+                      type="checkbox"
+                      id="isDeal"
+                      className="h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-500"
+                    />
+                    <label htmlFor="isDeal" className="text-sm text-gray-700">⚡ Flash Deals</label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      {...register('isOffer')}
+                      type="checkbox"
+                      id="isOffer"
+                      className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
+                    />
+                    <label htmlFor="isOffer" className="text-sm text-gray-700">🎁 Special Offers</label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      {...register('isNewArrival')}
+                      type="checkbox"
+                      id="isNewArrival"
+                      className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <label htmlFor="isNewArrival" className="text-sm text-gray-700">✨ New Arrivals</label>
+                  </div>
+                </div>
               </div>
 
               <div>
