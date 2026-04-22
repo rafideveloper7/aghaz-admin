@@ -134,6 +134,12 @@ export interface HeroSlide {
   rightSideMediaUrl?: string;
   rightSideCardTitle?: string;
   rightSideCardSubtitle?: string;
+  titleColor?: string;
+  subtitleColor?: string;
+  titleFontSize?: number;
+  subtitleFontSize?: number;
+  heroHeight?: number;
+  mobileHeroHeight?: number;
   isActive: boolean;
   sortOrder: number;
   createdAt: string;
@@ -166,6 +172,33 @@ export interface PageHero {
   rightSideImage?: string;
 }
 
+export interface TopBanner {
+  enabled?: boolean;
+  text?: string;
+  bgColor?: string;
+  textColor?: string;
+  link?: string;
+}
+
+export interface HomeHero {
+  enabled?: boolean;
+  title?: string;
+  subtitle?: string;
+  ctaText?: string;
+  bgColor?: string;
+  bgGradientStart?: string;
+  bgGradientMid?: string;
+  bgGradientEnd?: string;
+  bgImage?: string;
+  titleColor?: string;
+  subtitleColor?: string;
+  titleFontSize?: number;
+  subtitleFontSize?: number;
+  ctaLink?: string;
+  ctaBgColor?: string;
+  ctaTextColor?: string;
+}
+
 export interface SiteSettings {
   _id: string;
   logo: string;
@@ -194,6 +227,8 @@ export interface SiteSettings {
   dealsHero?: PageHero;
   aboutHero?: PageHero;
   shopHero?: PageHero;
+  topBanner?: TopBanner;
+  homeHero?: HomeHero;
 }
 
 export interface FooterSocial {

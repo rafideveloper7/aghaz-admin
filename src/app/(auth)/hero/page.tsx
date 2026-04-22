@@ -41,12 +41,18 @@ export default function HeroSlidesPage() {
     rightSideMediaUrl: '',
     rightSideCardTitle: '',
     rightSideCardSubtitle: '',
+    titleColor: '#ffffff',
+    subtitleColor: '#ffffff',
+    titleFontSize: 52,
+    subtitleFontSize: 16,
+    heroHeight: 450,
+    mobileHeroHeight: 400,
     isActive: true,
   });
 
   const handleOpenCreate = () => {
     setEditingId(null);
-    setForm({ title: '', subtitle: '', image: '', mobileBg: '', desktopBg: '', ctaText: 'Shop Now', ctaLink: '/shop', mobileTitle: '', mobileSubtitle: '', mobileCtaText: '', mobileCtaLink: '', desktopTitle: '', desktopSubtitle: '', desktopCtaText: '', desktopCtaLink: '', rightSideMediaType: 'none', rightSideMediaUrl: '', rightSideCardTitle: '', rightSideCardSubtitle: '', isActive: true });
+    setForm({ title: '', subtitle: '', image: '', mobileBg: '', desktopBg: '', ctaText: 'Shop Now', ctaLink: '/shop', mobileTitle: '', mobileSubtitle: '', mobileCtaText: '', mobileCtaLink: '', desktopTitle: '', desktopSubtitle: '', desktopCtaText: '', desktopCtaLink: '', rightSideMediaType: 'none', rightSideMediaUrl: '', rightSideCardTitle: '', rightSideCardSubtitle: '', titleColor: '#ffffff', subtitleColor: '#ffffff', titleFontSize: 52, subtitleFontSize: 16, heroHeight: 450, mobileHeroHeight: 400, isActive: true });
     setShowModal(true);
   };
 
@@ -72,6 +78,12 @@ export default function HeroSlidesPage() {
       rightSideMediaUrl: slide.rightSideMediaUrl || '',
       rightSideCardTitle: slide.rightSideCardTitle || '',
       rightSideCardSubtitle: slide.rightSideCardSubtitle || '',
+      titleColor: slide.titleColor || '#ffffff',
+      subtitleColor: slide.subtitleColor || '#ffffff',
+      titleFontSize: slide.titleFontSize || 52,
+      subtitleFontSize: slide.subtitleFontSize || 16,
+      heroHeight: slide.heroHeight || 450,
+      mobileHeroHeight: slide.mobileHeroHeight || 400,
       isActive: slide.isActive,
     });
     setShowModal(true);
@@ -316,6 +328,30 @@ export default function HeroSlidesPage() {
             <div className="p-6 space-y-6">
               {/* Main/Fallback Content */}
               <div className="space-y-4">
+                <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">Colors & Fonts</h4>
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Title Color</label>
+                      <input type="color" value={form.titleColor || '#ffffff'} onChange={e => setForm(prev => ({ ...prev, titleColor: e.target.value }))} className="h-10 w-full rounded border cursor-pointer" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Subtitle Color</label>
+                      <input type="color" value={form.subtitleColor || '#ffffff'} onChange={e => setForm(prev => ({ ...prev, subtitleColor: e.target.value }))} className="h-10 w-full rounded border cursor-pointer" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Title Size (px)</label>
+                      <input type="number" value={form.titleFontSize || 52} onChange={e => setForm(prev => ({ ...prev, titleFontSize: parseInt(e.target.value) || 52 }))} className="input-field" min="16" max="96" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Subtitle Size (px)</label>
+                      <input type="number" value={form.subtitleFontSize || 16} onChange={e => setForm(prev => ({ ...prev, subtitleFontSize: parseInt(e.target.value) || 16 }))} className="input-field" min="10" max="32" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
                 <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">Main Content (Fallback)</h4>
                 <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
                   <p className="text-xs text-gray-600 mb-4">⚠️ This content is used as fallback if mobile or desktop specific content is not provided.</p>
@@ -335,6 +371,23 @@ export default function HeroSlidesPage() {
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1.5">CTA Link</label>
                       <input value={form.ctaLink} onChange={e => setForm(prev => ({ ...prev, ctaLink: e.target.value }))} className="input-field" placeholder="/shop" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section Height */}
+              <div className="space-y-4">
+                <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">Section Height</h4>
+                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Mobile Height (px)</label>
+                      <input type="number" value={form.mobileHeroHeight || 400} onChange={e => setForm(prev => ({ ...prev, mobileHeroHeight: parseInt(e.target.value) || 400 }))} className="input-field" min="200" max="800" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Desktop Height (px)</label>
+                      <input type="number" value={form.heroHeight || 450} onChange={e => setForm(prev => ({ ...prev, heroHeight: parseInt(e.target.value) || 450 }))} className="input-field" min="200" max="800" />
                     </div>
                   </div>
                 </div>

@@ -45,6 +45,8 @@ export default function SettingsPage() {
     dealsHero: { title: 'Flash Deals', subtitle: 'Grab these amazing deals before they are gone!', bgColor: '#ea580c', bgGradient: 'from-red-600 via-orange-500 to-yellow-500', bgImage: '', image: '', timerEndTime: '', titleColor: '#ffffff', subtitleColor: '#ffffff', titleFontSize: 48, subtitleFontSize: 18, rightSideImage: '' },
     aboutHero: { title: 'About Aghaz', subtitle: 'Your trusted destination for premium smart gadgets', bgColor: '#111827', bgGradient: 'from-gray-900 via-gray-800 to-emerald-900', bgImage: '', image: '', titleColor: '#ffffff', subtitleColor: '#ffffff', titleFontSize: 48, subtitleFontSize: 18, rightSideImage: '' },
     shopHero: { title: 'All Products', subtitle: 'Discover amazing deals on our curated collection', bgColor: '#1a1a2e', bgGradient: 'from-purple-700 via-indigo-600 to-blue-500', bgImage: '', image: '', titleColor: '#ffffff', subtitleColor: '#ffffff', titleFontSize: 48, subtitleFontSize: 18, rightSideImage: '' },
+    topBanner: { enabled: false, text: '', bgColor: '#000000', textColor: '#ffffff', link: '' },
+    homeHero: { enabled: true, title: 'Discover Smart Living', subtitle: 'Curated products that make your life easier, smarter, and more enjoyable.', ctaText: 'Shop Now', bgColor: '#065f46', bgGradientStart: '#064e3b', bgGradientMid: '#0f172a', bgGradientEnd: '#000000', bgImage: '', titleColor: '#ffffff', subtitleColor: '#c4b5fd', titleFontSize: 48, subtitleFontSize: 16, ctaLink: '/shop', ctaBgColor: '#ffffff', ctaTextColor: '#000000' },
   });
 
 useEffect(() => {
@@ -68,6 +70,8 @@ useEffect(() => {
           dealsHero: settings.dealsHero || { title: 'Flash Deals', subtitle: 'Grab these amazing deals before they are gone!', bgColor: '#ea580c', bgGradient: 'from-red-600 via-orange-500 to-yellow-500', bgImage: '', image: '', timerEndTime: '', titleColor: '#ffffff', subtitleColor: '#ffffff', titleFontSize: 48, subtitleFontSize: 18, rightSideImage: '' },
           aboutHero: settings.aboutHero || { title: 'About Aghaz', subtitle: 'Your trusted destination for premium smart gadgets', bgColor: '#111827', bgGradient: 'from-gray-900 via-gray-800 to-emerald-900', bgImage: '', image: '', titleColor: '#ffffff', subtitleColor: '#ffffff', titleFontSize: 48, subtitleFontSize: 18, rightSideImage: '' },
           shopHero: settings.shopHero || { title: 'All Products', subtitle: 'Discover amazing deals on our curated collection', bgColor: '#1a1a2e', bgGradient: 'from-purple-700 via-indigo-600 to-blue-500', bgImage: '', image: '', titleColor: '#ffffff', subtitleColor: '#ffffff', titleFontSize: 48, subtitleFontSize: 18, rightSideImage: '' },
+          topBanner: settings.topBanner || { enabled: false, text: '', bgColor: '#000000', textColor: '#ffffff', link: '' },
+          homeHero: settings.homeHero || { enabled: true, title: 'Discover Smart Living', subtitle: 'Curated products that make your life easier, smarter, and more enjoyable.', ctaText: 'Shop Now', bgColor: '#065f46', bgGradientStart: '#064e3b', bgGradientMid: '#0f172a', bgGradientEnd: '#000000', bgImage: '', titleColor: '#ffffff', subtitleColor: '#c4b5fd', titleFontSize: 48, subtitleFontSize: 16, ctaLink: '/shop', ctaBgColor: '#ffffff', ctaTextColor: '#000000' },
         });
       }
     }, [settings]);
@@ -470,6 +474,249 @@ useEffect(() => {
             </label>
           </div>
         </div>
+      </div>
+
+      {/* Top Banner Settings */}
+      <div className="card p-4 sm:p-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Top Banner</h2>
+        <p className="text-sm text-gray-500 mb-4">Show a notification bar at the top of the site</p>
+
+        <div className="flex items-center justify-between rounded-lg border border-gray-200 p-4 mb-4">
+          <div>
+            <p className="font-medium text-gray-900">Enable Top Banner</p>
+            <p className="text-sm text-gray-500">Show banner at the top of all pages</p>
+          </div>
+          <label className="relative inline-flex items-center cursor-pointer">
+            <input
+              type="checkbox"
+              checked={form.topBanner?.enabled ?? false}
+              onChange={(e) => setForm(prev => ({ ...prev, topBanner: { ...prev.topBanner, enabled: e.target.checked } }))}
+              className="sr-only peer"
+            />
+            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+          </label>
+        </div>
+
+        {(form.topBanner?.enabled) && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-medium text-gray-700 mb-1">Banner Text</label>
+              <input 
+                value={form.topBanner?.text || ''} 
+                onChange={e => setForm(prev => ({ ...prev, topBanner: { ...prev.topBanner, text: e.target.value } }))} 
+                className="input-field" 
+                placeholder="Free shipping on orders above Rs. 2000!" 
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Background Color</label>
+              <input 
+                type="color" 
+                value={form.topBanner?.bgColor || '#000000'} 
+                onChange={e => setForm(prev => ({ ...prev, topBanner: { ...prev.topBanner, bgColor: e.target.value } }))} 
+                className="h-10 w-full rounded-lg border cursor-pointer" 
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Text Color</label>
+              <input 
+                type="color" 
+                value={form.topBanner?.textColor || '#ffffff'} 
+                onChange={e => setForm(prev => ({ ...prev, topBanner: { ...prev.topBanner, textColor: e.target.value } }))} 
+                className="h-10 w-full rounded-lg border cursor-pointer" 
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-medium text-gray-700 mb-1">Link (optional)</label>
+              <input 
+                value={form.topBanner?.link || ''} 
+                onChange={e => setForm(prev => ({ ...prev, topBanner: { ...prev.topBanner, link: e.target.value } }))} 
+                className="input-field" 
+                placeholder="/shop?filter=deal" 
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Home Page Hero Settings */}
+      <div className="card p-4 sm:p-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Home Page Hero</h2>
+        <p className="text-sm text-gray-500 mb-4">Customize the homepage hero section</p>
+
+        <div className="flex items-center justify-between rounded-lg border border-gray-200 p-4 mb-4">
+          <div>
+            <p className="font-medium text-gray-900">Enable Homepage Hero</p>
+            <p className="text-sm text-gray-500">Show custom hero on homepage (overrides slides)</p>
+          </div>
+          <label className="relative inline-flex items-center cursor-pointer">
+            <input
+              type="checkbox"
+              checked={form.homeHero?.enabled ?? true}
+              onChange={(e) => setForm(prev => ({ ...prev, homeHero: { ...prev.homeHero, enabled: e.target.checked } }))}
+              className="sr-only peer"
+            />
+            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+          </label>
+        </div>
+
+        {(form.homeHero?.enabled) && (
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-medium text-gray-700 mb-1">Title</label>
+                <input 
+                  value={form.homeHero?.title || ''} 
+                  onChange={e => setForm(prev => ({ ...prev, homeHero: { ...prev.homeHero, title: e.target.value } }))} 
+                  className="input-field" 
+                  placeholder="Discover Smart Living" 
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-medium text-gray-700 mb-1">Subtitle</label>
+                <textarea 
+                  value={form.homeHero?.subtitle || ''} 
+                  onChange={e => setForm(prev => ({ ...prev, homeHero: { ...prev.homeHero, subtitle: e.target.value } }))} 
+                  className="input-field min-h-20 resize-y" 
+                  placeholder="Curated products that make your life easier..." 
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Title Font Size (px)</label>
+                <input 
+                  type="number"
+                  value={form.homeHero?.titleFontSize || 48} 
+                  onChange={e => setForm(prev => ({ ...prev, homeHero: { ...prev.homeHero, titleFontSize: parseInt(e.target.value) || 48 } }))} 
+                  className="input-field" 
+                  min="16"
+                  max="96"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Subtitle Font Size (px)</label>
+                <input 
+                  type="number"
+                  value={form.homeHero?.subtitleFontSize || 16} 
+                  onChange={e => setForm(prev => ({ ...prev, homeHero: { ...prev.homeHero, subtitleFontSize: parseInt(e.target.value) || 16 } }))} 
+                  className="input-field" 
+                  min="10"
+                  max="32"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Title Color</label>
+                <input 
+                  type="color" 
+                  value={form.homeHero?.titleColor || '#ffffff'} 
+                  onChange={e => setForm(prev => ({ ...prev, homeHero: { ...prev.homeHero, titleColor: e.target.value } }))} 
+                  className="h-10 w-full rounded-lg border cursor-pointer" 
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Subtitle Color</label>
+                <input 
+                  type="color" 
+                  value={form.homeHero?.subtitleColor || '#c4b5fd'} 
+                  onChange={e => setForm(prev => ({ ...prev, homeHero: { ...prev.homeHero, subtitleColor: e.target.value } }))} 
+                  className="h-10 w-full rounded-lg border cursor-pointer" 
+                />
+              </div>
+            </div>
+
+            <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-200">
+              <h3 className="font-semibold text-emerald-800 mb-3">Background</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Background Color</label>
+                  <input 
+                    type="color" 
+                    value={form.homeHero?.bgColor || '#065f46'} 
+                    onChange={e => setForm(prev => ({ ...prev, homeHero: { ...prev.homeHero, bgColor: e.target.value } }))} 
+                    className="h-10 w-full rounded-lg border cursor-pointer" 
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Gradient Start</label>
+                  <input 
+                    type="color" 
+                    value={form.homeHero?.bgGradientStart || '#064e3b'} 
+                    onChange={e => setForm(prev => ({ ...prev, homeHero: { ...prev.homeHero, bgGradientStart: e.target.value } }))} 
+                    className="h-10 w-full rounded-lg border cursor-pointer" 
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Gradient Middle</label>
+                  <input 
+                    type="color" 
+                    value={form.homeHero?.bgGradientMid || '#0f172a'} 
+                    onChange={e => setForm(prev => ({ ...prev, homeHero: { ...prev.homeHero, bgGradientMid: e.target.value } }))} 
+                    className="h-10 w-full rounded-lg border cursor-pointer" 
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Gradient End</label>
+                  <input 
+                    type="color" 
+                    value={form.homeHero?.bgGradientEnd || '#000000'} 
+                    onChange={e => setForm(prev => ({ ...prev, homeHero: { ...prev.homeHero, bgGradientEnd: e.target.value } }))} 
+                    className="h-10 w-full rounded-lg border cursor-pointer" 
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Background Image URL (optional)</label>
+                  <input 
+                    value={form.homeHero?.bgImage || ''} 
+                    onChange={e => setForm(prev => ({ ...prev, homeHero: { ...prev.homeHero, bgImage: e.target.value } }))} 
+                    className="input-field" 
+                    placeholder="https://example.com/bg-image.jpg" 
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
+              <h3 className="font-semibold text-blue-800 mb-3">Button (CTA)</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Button Text</label>
+                  <input 
+                    value={form.homeHero?.ctaText || ''} 
+                    onChange={e => setForm(prev => ({ ...prev, homeHero: { ...prev.homeHero, ctaText: e.target.value } }))} 
+                    className="input-field" 
+                    placeholder="Shop Now" 
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Button Link</label>
+                  <input 
+                    value={form.homeHero?.ctaLink || ''} 
+                    onChange={e => setForm(prev => ({ ...prev, homeHero: { ...prev.homeHero, ctaLink: e.target.value } }))} 
+                    className="input-field" 
+                    placeholder="/shop" 
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Button Background</label>
+                  <input 
+                    type="color" 
+                    value={form.homeHero?.ctaBgColor || '#ffffff'} 
+                    onChange={e => setForm(prev => ({ ...prev, homeHero: { ...prev.homeHero, ctaBgColor: e.target.value } }))} 
+                    className="h-10 w-full rounded-lg border cursor-pointer" 
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Button Text Color</label>
+                  <input 
+                    type="color" 
+                    value={form.homeHero?.ctaTextColor || '#000000'} 
+                    onChange={e => setForm(prev => ({ ...prev, homeHero: { ...prev.homeHero, ctaTextColor: e.target.value } }))} 
+                    className="h-10 w-full rounded-lg border cursor-pointer" 
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Page Hero Customizations */}
