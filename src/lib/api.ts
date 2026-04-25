@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import { API_URL } from './constants';
 import { useAuthStore } from '@/store/authStore';
-import type { ApiResponse, Product, Category, Order, DashboardStats, HeroSlide, SiteSettings, FooterSocial, ContactMessage, Review } from '@/types';
+import type { ApiResponse, Product, Category, Order, DashboardStats, HeroSlide, SiteSettings, FooterSocial, ContactMessage, Review, Blog, CreateBlogData } from '@/types';
 import type { Announcement, CreateAnnouncementData, UpdateAnnouncementData } from '@/types/announcement';
 
 const apiClient: AxiosInstance = axios.create({
@@ -177,6 +177,28 @@ export const imagesApi = {
     apiClient.delete<ApiResponse<null>>(`/api/images/${fileId}`),
   bulkDelete: (fileIds: string[]) =>
     apiClient.delete<ApiResponse<null>>('/api/images/bulk', { data: { fileIds } }),
+};
+
+// Blogs
+export const blogsApi = {
+  getAll: (params?: { page?: number; limit?: number; search?: string; category?: string; tag?: string; sort?: string; featured?: boolean; status?: string }) =>
+    apiClient.get<ApiResponse<Blog[]>>('/api/blogs', { params }),
+  getFeatured: (limit?: number) =>
+    apiClient.get<ApiResponse<Blog[]>>(`/api/blogs/featured${limit ? `?limit=${limit}` : ''}`),
+  getRecent: (limit?: number) =>
+    apiClient.get<ApiResponse<Blog[]>>(`/api/blogs/recent${limit ? `?limit=${limit}` : ''}`),
+  getBySlug: (slug: string) =>
+    apiClient.get<ApiResponse<Blog>>(`/api/blogs/${slug}`),
+  getById: (id: string) =>
+    apiClient.get<ApiResponse<Blog>>(`/api/blogs/id/${id}`),
+  create: (data: FormData | Record<string, unknown>) =>
+    apiClient.post<ApiResponse<Blog>>('/api/blogs', data),
+  update: (id: string, data: Record<string, unknown>) =>
+    apiClient.put<ApiResponse<Blog>>(`/api/blogs/${id}`, data),
+  delete: (id: string) =>
+    apiClient.delete<ApiResponse<null>>(`/api/blogs/${id}`),
+  incrementLike: (id: string) =>
+    apiClient.post<ApiResponse<{ likeCount: number }>>(`/api/blogs/${id}/like`),
 };
 
 export default apiClient;

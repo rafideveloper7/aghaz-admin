@@ -253,3 +253,65 @@ export interface ContactMessage {
   expiresAt: string;
   createdAt: string;
 }
+
+export interface BlogAuthor {
+  name: string;
+  image?: string;
+  adminId?: string;
+}
+
+export interface BlogCustomLink {
+  text: string;
+  url: string;
+  style: 'primary' | 'secondary' | 'outline' | 'link';
+  isButton: boolean;
+}
+
+export interface Blog {
+  _id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  featuredImage: string;
+  gallery: string[];
+  author: BlogAuthor;
+  tags: string[];
+  category?: string | Category;
+  isPublished: boolean;
+  isFeatured: boolean;
+  publishedAt?: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  customLinks: BlogCustomLink[];
+  viewCount: number;
+  likeCount: number;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateBlogData {
+  title: string;
+  excerpt: string;
+  content: string;
+  featuredImage: string;
+  gallery?: string[];
+  author?: { name: string };
+  tags?: string[];
+  category?: string;
+  isPublished?: boolean;
+  isFeatured?: boolean;
+  publishedAt?: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  customLinks?: BlogCustomLink[];
+  sortOrder?: number;
+}
+
+export interface UpdateBlogData extends Partial<CreateBlogData> {
+  title?: string;
+  excerpt?: string;
+  content?: string;
+  featuredImage?: string;
+}

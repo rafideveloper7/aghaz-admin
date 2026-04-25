@@ -19,6 +19,7 @@ import {
   FiMail,
   FiMessageSquare,
   FiFile,
+  FiEdit3,
 } from 'react-icons/fi';
 import { useState } from 'react';
 import { useAuthStore } from '@/store/authStore';
@@ -27,6 +28,7 @@ import { cn } from '@/lib/utils';
 const navItems = [
   { label: 'Dashboard', href: '/dashboard', icon: FiHome },
   { label: 'Products', href: '/products', icon: FiPackage },
+  { label: 'Blogs', href: '/blogs', icon: FiEdit3 },
   { label: 'Orders', href: '/orders', icon: FiShoppingCart },
   { label: 'Categories', href: '/categories', icon: FiFolder },
   { label: 'Hero Slides', href: '/hero', icon: FiImage },
