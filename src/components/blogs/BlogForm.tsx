@@ -1,3 +1,4 @@
+// src/components/blogs/BlogForm.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -117,19 +118,15 @@ export default function BlogForm({ blogId }: BlogFormProps) {
       delete finalData.authorName;
 
       if (isEditing && blogId) {
-        // Only send changed fields for update
-        const changes: Record<string, unknown> = { ...finalData };
-        // Remove fields that shouldn't be sent if they're unchanged? Actually just send all except _id, createdAt, updatedAt
-        // For simplicity, send all fields and let backend handle it
-
-        await updateMutation.mutateAsync({ id: blogId, data: changes });
+        await updateMutation.mutateAsync({ id: blogId, data: finalData });
         toast.success('Blog updated successfully');
       } else {
-        await createMutation.mutateAsync(finalData as CreateBlogData);
+        await createMutation.mutateAsync(finalData as any);
         toast.success('Blog created successfully');
       }
       router.push('/blogs');
     } catch (error: unknown) {
+      console.error('Submit error:', error);
       toast.error(error instanceof Error ? error.message : 'Failed to save blog');
     }
   };
@@ -383,7 +380,7 @@ export default function BlogForm({ blogId }: BlogFormProps) {
                   className="btn-primary w-full"
                 >
                   {(createMutation.isPending || updateMutation.isPending) ? (
-                    <span className="flex items-center gap-2">
+                    <span className="flex items-center gap-2 justify-center">
                       <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
                       Saving...
                     </span>
