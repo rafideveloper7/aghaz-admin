@@ -1,267 +1,318 @@
+// src/components/blogs/BlogForm.tsx
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { FiPlus, FiSearch, FiEdit2, FiTrash2, FiEye, FiFileText } from 'react-icons/fi';
-import { useBlogs, useDeleteBlog } from '@/hooks/useBlogs';
+import { FiSave } from 'react-icons/fi';
+import { useCreateBlog, useUpdateBlog, useBlog } from '@/hooks/useBlogs';
 import { useCategories } from '@/hooks/useCategories';
-import ConfirmDialog from '@/components/common/ConfirmDialog';
+import SingleImageUpload from '@/components/common/SingleImageUpload';
 import type { Blog } from '@/types';
 
-export default function BlogsPage() {
-  const [page, setPage] = useState(1);
-  const limit = 10;
-  const [search, setSearch] = useState('');
-  const [status, setStatus] = useState('');
-  const [featured, setFeatured] = useState('');
-  const [deleteId, setDeleteId] = useState<string | null>(null);
+interface BlogFormProps {
+  blogId?: string;
+}
 
-  const { data: blogsData, isLoading } = useBlogs({ page, limit, search, status, featured });
+export default function BlogForm({ blogId }: BlogFormProps) {
+  const router = useRouter();
+  const isEditing = !!blogId;
+  
+  // Fetch blog data if editing
+  const { data: blogData, isLoading: isLoadingBlog } = useBlog(blogId || '');
+  
+  const [formData, setFormData] = useState({
+    title: '',
+    excerpt: '',
+    content: '',
+    category: '',
+    featuredImage: '',
+    isPublished: false,
+    isFeatured: false,
+    tags: '',
+    metaTitle: '',
+    metaDescription: '',
+  });
+
   const { data: categoriesData } = useCategories(true);
-  const deleteMutation = useDeleteBlog();
+  const createBlog = useCreateBlog();
+  const updateBlog = useUpdateBlog();
 
-  const blogs = blogsData?.data || [];
-  const pagination = blogsData?.pagination;
-  const categories = categoriesData?.data || [];
+  const categories = Array.isArray(categoriesData?.data) ? categoriesData.data : [];
 
-  const handleDelete = async () => {
-    if (!deleteId) return;
+  // Populate form when editing
+  useState(() => {
+    if (isEditing && blogData?.data) {
+      const blog = blogData.data;
+      setFormData({
+        title: blog.title || '',
+        excerpt: blog.excerpt || '',
+        content: blog.content || '',
+        category: typeof blog.category === 'object' ? blog.category?._id : blog.category || '',
+        featuredImage: blog.featuredImage || '',
+        isPublished: blog.isPublished || false,
+        isFeatured: blog.isFeatured || false,
+        tags: blog.tags?.join(', ') || '',
+        metaTitle: blog.metaTitle || '',
+        metaDescription: blog.metaDescription || '',
+      });
+    }
+  });
+
+  const handleImageUpload = (imageUrl: string) => {
+    console.log('Image uploaded successfully:', imageUrl);
+    setFormData(prev => ({ ...prev, featuredImage: imageUrl }));
+    toast.success('Featured image uploaded!');
+  };
+
+  const handleImageError = (error: string) => {
+    console.error('Image upload error:', error);
+    toast.error(error);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    console.log('Submitting form with featuredImage:', formData.featuredImage);
+    
+    // Validate required fields
+    if (!formData.title.trim()) {
+      toast.error('Title is required');
+      return;
+    }
+    
+    if (!formData.category) {
+      toast.error('Category is required');
+      return;
+    }
+    
+    if (!formData.featuredImage) {
+      toast.error('Featured image is required');
+      return;
+    }
+
+    const submitData = {
+      title: formData.title,
+      excerpt: formData.excerpt,
+      content: formData.content,
+      category: formData.category,
+      featuredImage: formData.featuredImage,
+      isPublished: formData.isPublished,
+      isFeatured: formData.isFeatured,
+      tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
+      metaTitle: formData.metaTitle,
+      metaDescription: formData.metaDescription,
+    };
+
     try {
-      await deleteMutation.mutateAsync(deleteId);
-      toast.success('Blog deleted successfully');
-      setDeleteId(null);
-    } catch {
-      toast.error('Failed to delete blog');
+      if (isEditing && blogId) {
+        await updateBlog.mutateAsync({ id: blogId, data: submitData });
+        toast.success('Blog updated successfully!');
+      } else {
+        await createBlog.mutateAsync(submitData);
+        toast.success('Blog created successfully!');
+      }
+      router.push('/blogs');
+      router.refresh();
+    } catch (error: any) {
+      console.error('Submit error:', error);
+      toast.error(error?.response?.data?.message || error?.message || 'Failed to save blog');
     }
   };
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    setPage(1);
-  };
-
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return '-';
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
-
-  const getCategoryName = (category: any) => {
-    if (!category) return '-';
-    if (typeof category === 'string') return category;
-    return category.name || '-';
-  };
+  if (isEditing && isLoadingBlog) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+      </div>
+    );
+  }
 
   return (
-    <div>
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Blogs</h1>
-          <p className="text-gray-500 text-sm mt-1">Manage your blog posts and articles</p>
+    <form onSubmit={handleSubmit} className="max-w-5xl mx-auto space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-gray-900">
+          {isEditing ? 'Edit Blog' : 'Create New Blog'}
+        </h1>
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={createBlog.isLoading || updateBlog.isLoading}
+            className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 disabled:opacity-50 flex items-center gap-2"
+          >
+            <FiSave className="h-4 w-4" />
+            {isEditing ? 'Update' : 'Publish'}
+          </button>
         </div>
-        <Link href="/blogs/new" className="btn-primary">
-          <FiPlus className="mr-2 h-4 w-4" />
-          Add Blog
-        </Link>
       </div>
 
-      {/* Filters */}
-      <div className="card p-4 mb-6">
-        <div className="flex flex-col gap-3">
-          <form onSubmit={handleSearch} className="w-full">
-            <div className="relative">
-              <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <input
-                type="text"
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                placeholder="Search blogs..."
-                className="input-field pl-9 w-full"
-              />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Main Content */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Title */}
+          <div className="bg-white rounded-lg shadow-sm border p-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Blog Title *
+            </label>
+            <input
+              type="text"
+              value={formData.title}
+              onChange={e => setFormData(prev => ({ ...prev, title: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+              placeholder="Enter blog title..."
+              required
+            />
+          </div>
+
+          {/* Featured Image Upload - Using your existing component */}
+          <div className="bg-white rounded-lg shadow-sm border p-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Featured Image *
+            </label>
+            <SingleImageUpload
+              value={formData.featuredImage}
+              onChange={handleImageUpload}
+              onError={handleImageError}
+              folder="blogs"
+              aspectRatio="16/9"
+              className="w-full"
+            />
+            {formData.featuredImage && (
+              <p className="text-xs text-green-600 mt-2">
+                ✓ Image uploaded successfully
+              </p>
+            )}
+          </div>
+
+          {/* Excerpt */}
+          <div className="bg-white rounded-lg shadow-sm border p-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Excerpt / Summary
+            </label>
+            <textarea
+              value={formData.excerpt}
+              onChange={e => setFormData(prev => ({ ...prev, excerpt: e.target.value }))}
+              rows={3}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+              placeholder="Write a brief summary of your blog..."
+            />
+          </div>
+
+          {/* Content */}
+          <div className="bg-white rounded-lg shadow-sm border p-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Content *
+            </label>
+            <textarea
+              value={formData.content}
+              onChange={e => setFormData(prev => ({ ...prev, content: e.target.value }))}
+              rows={15}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 font-mono"
+              placeholder="Write your blog content here..."
+              required
+            />
+          </div>
+        </div>
+
+        {/* Sidebar */}
+        <div className="space-y-6">
+          {/* Category */}
+          <div className="bg-white rounded-lg shadow-sm border p-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Category *
+            </label>
+            <select
+              value={formData.category}
+              onChange={e => setFormData(prev => ({ ...prev, category: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+              required
+            >
+              <option value="">Select a category</option>
+              {categories.map((category: any) => (
+                <option key={category._id} value={category._id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Status */}
+          <div className="bg-white rounded-lg shadow-sm border p-6">
+            <label className="block text-sm font-medium text-gray-700 mb-3">
+              Blog Status
+            </label>
+            <div className="space-y-2">
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={formData.isPublished}
+                  onChange={e => setFormData(prev => ({ ...prev, isPublished: e.target.checked }))}
+                  className="rounded border-gray-300 focus:ring-primary-500"
+                />
+                <span className="text-sm text-gray-700">Published</span>
+              </label>
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={formData.isFeatured}
+                  onChange={e => setFormData(prev => ({ ...prev, isFeatured: e.target.checked }))}
+                  className="rounded border-gray-300 focus:ring-primary-500"
+                />
+                <span className="text-sm text-gray-700">Feature this blog</span>
+              </label>
             </div>
-          </form>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            <select
-              value={status}
-              onChange={e => { setStatus(e.target.value); setPage(1); }}
-              className="input-field w-full"
-            >
-              <option value="">All Status</option>
-              <option value="published">Published</option>
-              <option value="draft">Draft</option>
-            </select>
-            <select
-              value={featured}
-              onChange={e => { setFeatured(e.target.value); setPage(1); }}
-              className="input-field w-full"
-            >
-              <option value="">All Blogs</option>
-              <option value="featured">Featured Only</option>
-              <option value="non-featured">Non-Featured</option>
-            </select>
           </div>
-        </div>
-      </div>
 
-      {/* Table */}
-      <div className="card overflow-hidden">
-        {isLoading ? (
-          <div className="p-6 space-y-4">
-            {[1, 2, 3, 4, 5].map(i => (
-              <div key={i} className="flex items-center gap-4 animate-pulse">
-                <div className="h-12 w-12 rounded-lg bg-gray-200" />
-                <div className="flex-1 space-y-2">
-                  <div className="h-4 bg-gray-200 rounded w-48" />
-                  <div className="h-3 bg-gray-200 rounded w-24" />
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : blogs.length === 0 ? (
-          <div className="p-12 text-center">
-            <FiFileText className="mx-auto h-12 w-12 text-gray-300 mb-3" />
-            <p className="text-gray-500 mb-1">No blogs found</p>
-            <p className="text-sm text-gray-400">Try adjusting your filters or create a new blog</p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-100 bg-gray-50">
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-6 py-3">Blog</th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-6 py-3 hidden md:table-cell">Category</th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-6 py-3">Status</th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-6 py-3 hidden lg:table-cell">Published</th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-6 py-3 hidden lg:table-cell">Views</th>
-                  <th className="text-right text-xs font-medium text-gray-500 uppercase tracking-wider px-6 py-3">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {blogs.map((blog: Blog) => (
-                  <tr key={blog._id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="h-11 w-11 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0">
-                          {blog.featuredImage ? (
-                            <img
-                              src={blog.featuredImage}
-                              alt={blog.title}
-                              className="h-full w-full object-cover"
-                            />
-                          ) : (
-                            <div className="h-full w-full flex items-center justify-center">
-                              <FiFileText className="h-5 w-5 text-gray-400" />
-                            </div>
-                          )}
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-sm font-medium text-gray-900 truncate max-w-[200px]">
-                            {blog.title}
-                          </p>
-                          <p className="text-xs text-gray-500 truncate max-w-[200px]">
-                            {blog.excerpt?.substring(0, 50)}...
-                          </p>
-                          {blog.isFeatured && (
-                            <span className="inline-block mt-1 px-2 py-0.5 text-xs bg-amber-100 text-amber-700 rounded">
-                              Featured
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 hidden md:table-cell">
-                      <span className="text-sm text-gray-600">
-                        {getCategoryName(blog.category)}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          blog.isPublished
-                            ? 'bg-green-100 text-green-700'
-                            : 'bg-gray-100 text-gray-700'
-                        }`}
-                      >
-                        {blog.isPublished ? 'Published' : 'Draft'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 hidden lg:table-cell">
-                      <span className="text-sm text-gray-600">
-                        {formatDate(blog.publishedAt || blog.createdAt)}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 hidden lg:table-cell">
-                      <span className="text-sm text-gray-600">
-                        {blog.viewCount.toLocaleString()}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center justify-end gap-2">
-                        <Link
-                          href={`/blogs/${blog._id}`}
-                          className="p-2 text-gray-600 hover:text-primary-600 hover:bg-gray-100 rounded-lg transition-colors"
-                          title="Edit"
-                        >
-                          <FiEdit2 className="h-4 w-4" />
-                        </Link>
-                        <button
-                          onClick={() => setDeleteId(blog._id)}
-                          className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Delete"
-                        >
-                          <FiTrash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        {/* Pagination */}
-        {pagination && pagination.totalPages > 1 && (
-          <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between">
-            <p className="text-sm text-gray-500">
-              Showing {(pagination.page - 1) * pagination.limit + 1} to{' '}
-              {Math.min(pagination.page * pagination.limit, pagination.total)} of{' '}
-              {pagination.total} blogs
+          {/* Tags */}
+          <div className="bg-white rounded-lg shadow-sm border p-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Tags
+            </label>
+            <input
+              type="text"
+              value={formData.tags}
+              onChange={e => setFormData(prev => ({ ...prev, tags: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+              placeholder="react, nextjs, tailwind"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Separate tags with commas
             </p>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setPage(p => p - 1)}
-                disabled={pagination.page <= 1}
-                className="px-3 py-1 text-sm border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Previous
-              </button>
-              <button
-                onClick={() => setPage(p => p + 1)}
-                disabled={pagination.page >= pagination.totalPages}
-                className="px-3 py-1 text-sm border rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Next
-              </button>
-            </div>
           </div>
-        )}
-      </div>
 
-      {/* Delete Confirmation */}
-      <ConfirmDialog
-        isOpen={!!deleteId}
-        onClose={() => setDeleteId(null)}
-        onConfirm={handleDelete}
-        title="Delete Blog"
-        message="Are you sure you want to delete this blog? This action cannot be undone."
-        confirmText="Delete"
-        cancelText="Cancel"
-      />
-    </div>
+          {/* SEO */}
+          <div className="bg-white rounded-lg shadow-sm border p-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Meta Title
+            </label>
+            <input
+              type="text"
+              value={formData.metaTitle}
+              onChange={e => setFormData(prev => ({ ...prev, metaTitle: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+              placeholder="SEO title (optional)"
+            />
+            
+            <label className="block text-sm font-medium text-gray-700 mt-4 mb-2">
+              Meta Description
+            </label>
+            <textarea
+              value={formData.metaDescription}
+              onChange={e => setFormData(prev => ({ ...prev, metaDescription: e.target.value }))}
+              rows={3}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+              placeholder="SEO description (optional)"
+            />
+          </div>
+        </div>
+      </div>
+    </form>
   );
 }
