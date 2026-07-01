@@ -84,10 +84,9 @@ export const useDeleteBlog = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => blogsApi.delete(id).then(res => res.data),
+    mutationFn: (id: string) => blogsApi.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['blogs'] });
-      toast.success('Blog deleted successfully');
     },
     onError: (error: Error) => {
       toast.error(error.message || 'Failed to delete blog');

@@ -255,13 +255,12 @@ export default function BlogsPage() {
 
       {/* Delete Confirmation */}
       <ConfirmDialog
-        isOpen={!!deleteId}
-        onClose={() => setDeleteId(null)}
+        open={!!deleteId}
+        onCancel={() => setDeleteId(null)}
         onConfirm={handleDelete}
         title="Delete Blog"
         message="Are you sure you want to delete this blog? This action cannot be undone."
-        confirmText="Delete"
-        cancelText="Cancel"
+        variant="danger"
       />
     </div>
   );
