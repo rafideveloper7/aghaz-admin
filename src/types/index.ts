@@ -99,7 +99,7 @@ export interface ApiResponse<T> {
     page: number;
     limit: number;
     total: number;
-    pages: number;
+    totalPages: number;
   };
 }
 

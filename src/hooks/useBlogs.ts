@@ -10,19 +10,19 @@ export const useBlogs = (params?: {
   category?: string;
   tag?: string;
   sort?: string;
-  featured?: boolean;
+  featured?: string;
   status?: string;
 }) => {
   return useQuery({
     queryKey: ['blogs', params],
-    queryFn: () => blogsApi.getAll(params),
+    queryFn: () => blogsApi.getAll(params).then(res => res.data),
   });
 };
 
 export const useBlog = (slug: string) => {
   return useQuery({
     queryKey: ['blog', slug],
-    queryFn: () => blogsApi.getBySlug(slug),
+    queryFn: () => blogsApi.getBySlug(slug).then(res => res.data),
     enabled: !!slug,
   });
 };
@@ -30,7 +30,7 @@ export const useBlog = (slug: string) => {
 export const useBlogById = (id: string) => {
   return useQuery({
     queryKey: ['blogId', id],
-    queryFn: () => blogsApi.getById(id),
+    queryFn: () => blogsApi.getById(id).then(res => res.data),
     enabled: !!id,
   });
 };
@@ -53,7 +53,7 @@ export const useCreateBlog = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: FormData | CreateBlogData) => blogsApi.create(data),
+    mutationFn: (data: FormData | CreateBlogData) => blogsApi.create(data).then(res => res.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['blogs'] });
       toast.success('Blog created successfully');
@@ -69,7 +69,7 @@ export const useUpdateBlog = () => {
 
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: Record<string, unknown> }) =>
-      blogsApi.update(id, data),
+      blogsApi.update(id, data).then(res => res.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['blogs'] });
       toast.success('Blog updated successfully');
@@ -84,7 +84,7 @@ export const useDeleteBlog = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => blogsApi.delete(id),
+    mutationFn: (id: string) => blogsApi.delete(id).then(res => res.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['blogs'] });
       toast.success('Blog deleted successfully');
