@@ -7,7 +7,8 @@ import Image from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
 import TextAlign from '@tiptap/extension-text-align';
 import Underline from '@tiptap/extension-underline';
-import { TextStyle, Color } from '@tiptap/extension-text-style';
+import TextStyle from '@tiptap/extension-text-style';
+import Color from '@tiptap/extension-color';
 import { uploadApi } from '@/lib/api';
 import toast from 'react-hot-toast';
 import {
@@ -46,6 +47,9 @@ export default function RichTextEditor({
       Image.configure({
         inline: false,
         allowBase64: false,
+        HTMLAttributes: {
+          class: 'max-w-full h-auto',
+        },
       }),
       Link.configure({
         openOnClick: false,
@@ -54,7 +58,9 @@ export default function RichTextEditor({
         },
       }),
       TextAlign.configure({
-        types: ['heading', 'paragraph'],
+        types: ['heading', 'paragraph', 'image'],
+        alignments: ['left', 'center', 'right'],
+        defaultAlignment: 'left',
       }),
       Underline,
       TextStyle,
