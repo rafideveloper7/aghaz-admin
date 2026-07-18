@@ -23,9 +23,12 @@ apiClient.interceptors.response.use(
   (response: AxiosResponse) => response,
   (error: AxiosError<{ message?: string }>) => {
     if (error.response?.status === 401) {
-      useAuthStore.getState().logout();
-      if (typeof window !== 'undefined') {
-        window.location.href = '/login';
+      const isLoginEndpoint = error.config?.url?.includes('/api/admin/login');
+      if (!isLoginEndpoint) {
+        useAuthStore.getState().logout();
+        if (typeof window !== 'undefined') {
+          window.location.href = '/login';
+        }
       }
     }
     return Promise.reject(error);

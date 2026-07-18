@@ -35,13 +35,11 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginFormData) => {
     try {
       const result = await loginMutation.mutateAsync(data);
-      login(result.data.token, result.data.user);
+      login(result.token, result.user);
       
-      // Set a cookie so middleware can detect auth
-      document.cookie = `aghaz-admin-auth=${JSON.stringify({ state: { token: result.data.token, user: result.data.user } })}; path=/; max-age=604800; SameSite=Lax`;
+      document.cookie = `aghaz-admin-auth=${JSON.stringify({ state: { token: result.token, user: result.user } })}; path=/; max-age=604800; SameSite=Lax`;
       
       toast.success('Login successful');
-      // Use window.location for reliable redirect (bypasses client-side routing issues)
       window.location.replace('/dashboard');
     } catch (error: unknown) {
       const message =
