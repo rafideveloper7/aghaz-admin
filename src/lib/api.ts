@@ -38,7 +38,7 @@ apiClient.interceptors.response.use(
 // Auth
 export const authApi = {
   login: (email: string, password: string) =>
-    apiClient.post<ApiResponse<{ token: string; user: { email: string; role: string } }>>('/api/admin/login', { email, password }),
+    apiClient.post<{ success: boolean; token: string; user: { email: string; role: string } }>('/api/admin/login', { email, password }),
 };
 
 // Products
