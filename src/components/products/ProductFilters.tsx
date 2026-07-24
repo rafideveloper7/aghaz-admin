@@ -26,7 +26,7 @@ export default function ProductFilters({
   onSortChange,
 }: ProductFiltersProps) {
   const { data: categoriesData } = useCategories();
-  const categories = categoriesData?.data || [];
+  const categories = Array.isArray(categoriesData) ? categoriesData : (Array.isArray(categoriesData?.data) ? categoriesData.data : []);
   const [showFilters, setShowFilters] = useState(false);
 
   const hasActiveFilters = category || status || sort !== 'latest';

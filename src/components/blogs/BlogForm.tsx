@@ -48,7 +48,7 @@ export default function BlogForm({ blogId }: BlogFormProps) {
   const [gallery, setGallery] = useState<string[]>([]);
   const [customLinks, setCustomLinks] = useState<BlogCustomLink[]>([]);
 
-  const categories = categoriesData?.data || [];
+  const categories = Array.isArray(categoriesData) ? categoriesData : (categoriesData?.data || []);
 
   const {
     register,

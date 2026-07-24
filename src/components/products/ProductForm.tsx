@@ -48,7 +48,7 @@ export default function ProductForm({ product }: ProductFormProps) {
     product?.faqs || [{ question: '', answer: '' }]
   );
 
-  const categories = categoriesData?.data || [];
+  const categories = Array.isArray(categoriesData) ? categoriesData : (Array.isArray(categoriesData?.data) ? categoriesData.data : []);
 
   const {
     register,

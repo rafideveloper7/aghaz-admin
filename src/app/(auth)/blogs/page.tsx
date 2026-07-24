@@ -21,10 +21,9 @@ export default function BlogsPage() {
   const { data: categoriesData } = useCategories(true);
   const deleteMutation = useDeleteBlog();
 
-  // FIX: Ensure blogs is always an array, even if the API response is unexpected
-  const blogs = Array.isArray(blogsData?.data) ? blogsData.data : [];
+  const blogs = Array.isArray(blogsData) ? blogsData : (Array.isArray(blogsData?.data) ? blogsData.data : []);
   const pagination = blogsData?.pagination || null;
-  const categories = Array.isArray(categoriesData?.data) ? categoriesData.data : [];
+  const categories = Array.isArray(categoriesData) ? categoriesData : (Array.isArray(categoriesData?.data) ? categoriesData.data : []);
 
   const handleDelete = async () => {
     if (!deleteId) return;

@@ -18,8 +18,13 @@ export default function OrdersPage() {
 
   const { data: ordersData, isLoading } = useOrders({ page, limit, status, search });
   const deleteMutation = useDeleteOrder();
-  const orders = ordersData?.data || [];
-  const pagination = ordersData?.pagination;
+  const orders = Array.isArray(ordersData) ? ordersData : (Array.isArray(ordersData?.data) ? ordersData.data : []);
+  const pagination = ordersData?.pagination || {
+    page: 1,
+    pages: 1,
+    total: orders.length,
+    limit,
+  };
 
   const handleDelete = async () => {
     if (!deleteId) return;
@@ -151,7 +156,7 @@ export default function OrdersPage() {
         )}
 
         {/* Pagination */}
-        {pagination && pagination.pages > 1 && (
+        {pagination && pagination.pages && pagination.pages > 1 && (
           <div className="flex items-center justify-between px-6 py-4 border-t border-gray-100">
             <p className="text-sm text-gray-500">
               Page {pagination.page} of {pagination.pages}

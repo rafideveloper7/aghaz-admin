@@ -22,7 +22,7 @@ export default function AnalyticsPage() {
     endDate,
   });
 
-  const orders = ordersData?.data || [];
+  const orders = Array.isArray(ordersData) ? ordersData : (Array.isArray(ordersData?.data) ? ordersData.data : []);
 
   const generateChartData = () => {
     const dates = eachDayOfInterval({ start: subDays(new Date(), days), end: new Date() });

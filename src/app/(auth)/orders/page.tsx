@@ -18,7 +18,7 @@ export default function OrdersPage() {
 
   const { data: ordersData, isLoading } = useOrders({ page, limit, status, search });
   const deleteMutation = useDeleteOrder();
-  const orders = ordersData?.data || [];
+  const orders = Array.isArray(ordersData) ? ordersData : (Array.isArray(ordersData?.data) ? ordersData.data : []);
   const pagination = ordersData?.pagination;
 
   const handleDelete = async () => {

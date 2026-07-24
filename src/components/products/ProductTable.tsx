@@ -23,9 +23,9 @@ export default function ProductsPage() {
   const { data: categoriesData } = useCategories(true);
   const deleteMutation = useDeleteProduct();
 
-  const products = productsData?.data || [];
+  const products = Array.isArray(productsData) ? productsData : (Array.isArray(productsData?.data) ? productsData.data : []);
   const pagination = productsData?.pagination;
-  const categories = categoriesData?.data || [];
+  const categories = Array.isArray(categoriesData) ? categoriesData : (categoriesData?.data || []);
 
   const handleDelete = async () => {
     if (!deleteId) return;
