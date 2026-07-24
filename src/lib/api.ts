@@ -7,6 +7,7 @@ import type { Announcement, CreateAnnouncementData, UpdateAnnouncementData } fro
 const apiClient: AxiosInstance = axios.create({
   baseURL: API_URL,
   timeout: 30000,
+  withCredentials: true,  // Include cookies in cross-origin requests
   // Do NOT set default Content-Type; let axios set automatically based on data type
   // For FormData, the browser will set multipart/form-data with boundary
 });
@@ -24,10 +25,13 @@ apiClient.interceptors.response.use(
   (error: AxiosError<{ message?: string }>) => {
     if (error.response?.status === 401) {
       const isLoginEndpoint = error.config?.url?.includes('/api/admin/login');
-      if (!isLoginEndpoint) {
+      const isLoginPage = typeof window !== 'undefined' && window.location.pathname.startsWith('/login');
+      const hasToken = !!useAuthStore.getState().token;
+
+      if (!isLoginEndpoint && !isLoginPage && hasToken) {
         useAuthStore.getState().logout();
         if (typeof window !== 'undefined') {
-          window.location.href = '/login';
+          window.location.replace('/login');
         }
       }
     }

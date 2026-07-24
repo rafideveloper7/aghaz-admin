@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { FiShoppingCart, FiClock, FiCheckCircle, FiDollarSign } from 'react-icons/fi';
 import { useDashboardStats } from '@/hooks/useOrders';
 import { formatPrice } from '@/lib/utils';
@@ -18,12 +18,25 @@ const statCards = [
 ];
 
 export default function DashboardPage() {
-  const [dateRange, setDateRange] = useState<{ startDate: string; endDate: string }>(() => ({
-    startDate: format(subDays(new Date(), 7), 'yyyy-MM-dd'),
-    endDate: format(new Date(), 'yyyy-MM-dd'),
-  }));
+  const [startDate, setStartDate] = useState(() => format(subDays(new Date(), 7), 'yyyy-MM-dd'));
+  const [endDate, setEndDate] = useState(() => format(new Date(), 'yyyy-MM-dd'));
+  const [debouncedStartDate, setDebouncedStartDate] = useState(startDate);
+  const [debouncedEndDate, setDebouncedEndDate] = useState(endDate);
 
-  const { data: stats, isLoading } = useDashboardStats(dateRange);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedStartDate(startDate);
+      setDebouncedEndDate(endDate);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [startDate, endDate]);
+
+  const debouncedDateRange = useMemo(() => ({
+    startDate: debouncedStartDate,
+    endDate: debouncedEndDate,
+  }), [debouncedStartDate, debouncedEndDate]);
+
+  const { data: stats, isLoading } = useDashboardStats(debouncedDateRange);
 
   return (
     <div>
@@ -35,15 +48,15 @@ export default function DashboardPage() {
         <div className="flex items-center gap-3">
           <input
             type="date"
-            value={dateRange.startDate}
-            onChange={e => setDateRange(prev => ({ ...prev, startDate: e.target.value }))}
+            value={startDate}
+            onChange={e => setStartDate(e.target.value)}
             className="input-field w-auto"
           />
           <span className="text-gray-400">to</span>
           <input
             type="date"
-            value={dateRange.endDate}
-            onChange={e => setDateRange(prev => ({ ...prev, endDate: e.target.value }))}
+            value={endDate}
+            onChange={e => setEndDate(e.target.value)}
             className="input-field w-auto"
           />
         </div>

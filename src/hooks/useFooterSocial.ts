@@ -1,12 +1,18 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { footerSocialApi } from '@/lib/api';
+import { useAuthStore } from '@/store/authStore';
 import type { FooterSocial } from '@/types';
 
 export function useFooterSocial(all = false) {
+  const token = useAuthStore(state => state.token);
+
   return useQuery({
     queryKey: ['footer-social', all],
     queryFn: () => (all ? footerSocialApi.getAll() : footerSocialApi.getActive()),
+    enabled: !!token,
+    retry: false,
     select: (res) => res.data.data,
+    refetchOnWindowFocus: false,
   });
 }
 

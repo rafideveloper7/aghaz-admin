@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { blogsApi } from '@/lib/api';
+import { useAuthStore } from '@/store/authStore';
 import toast from 'react-hot-toast';
 import type { Blog, CreateBlogData } from '@/types';
 
@@ -13,25 +14,38 @@ export const useBlogs = (params?: {
   featured?: string;
   status?: string;
 }) => {
+  const token = useAuthStore(state => state.token);
+
   return useQuery({
     queryKey: ['blogs', params],
     queryFn: () => blogsApi.getAll(params).then(res => res.data),
+    enabled: !!token,
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 };
 
 export const useBlog = (slug: string) => {
+  const token = useAuthStore(state => state.token);
+
   return useQuery({
     queryKey: ['blog', slug],
     queryFn: () => blogsApi.getBySlug(slug).then(res => res.data),
-    enabled: !!slug,
+    enabled: !!slug && !!token,
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 };
 
 export const useBlogById = (id: string) => {
+  const token = useAuthStore(state => state.token);
+
   return useQuery({
     queryKey: ['blogId', id],
     queryFn: () => blogsApi.getById(id).then(res => res.data),
-    enabled: !!id,
+    enabled: !!id && !!token,
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 };
 

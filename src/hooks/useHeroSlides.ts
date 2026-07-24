@@ -1,13 +1,19 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { heroSlidesApi } from '@/lib/api';
+import { useAuthStore } from '@/store/authStore';
 import type { HeroSlide } from '@/types';
 
 export function useHeroSlides(all = false) {
+  const token = useAuthStore(state => state.token);
+
   return useQuery({
     queryKey: ['hero-slides', all],
     queryFn: () => (all ? heroSlidesApi.getAll() : heroSlidesApi.getActive()),
+    enabled: !!token,
+    retry: false,
     select: (res) => res.data.data,
     staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
   });
 }
 

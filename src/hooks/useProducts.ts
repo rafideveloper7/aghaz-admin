@@ -1,20 +1,30 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { productsApi } from '@/lib/api';
+import { useAuthStore } from '@/store/authStore';
 import type { Product } from '@/types';
 
 export function useProducts(params?: { page?: number; limit?: number; search?: string; category?: string; status?: string; sort?: string }) {
+  const token = useAuthStore(state => state.token);
+
   return useQuery({
     queryKey: ['products', params],
     queryFn: () => productsApi.getAll(params).then(res => res.data),
+    enabled: !!token,
+    retry: false,
     staleTime: 1000 * 60,
+    refetchOnWindowFocus: false,
   });
 }
 
 export function useProduct(id: string) {
+  const token = useAuthStore(state => state.token);
+
   return useQuery({
     queryKey: ['product', id],
     queryFn: () => productsApi.getById(id).then(res => res.data),
-    enabled: !!id,
+    enabled: !!id && !!token,
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 }
 

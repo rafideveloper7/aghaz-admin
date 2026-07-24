@@ -1,7 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { reviewsApi } from '@/lib/api';
+import { useAuthStore } from '@/store/authStore';
 
 export const useReviews = (params?: { page?: number; limit?: number; product?: string; approved?: boolean }) => {
+  const token = useAuthStore(state => state.token);
   const queryKey = ['admin-reviews', params];
 
   return useQuery({
@@ -10,16 +12,24 @@ export const useReviews = (params?: { page?: number; limit?: number; product?: s
       const response = await reviewsApi.getAll(params);
       return response.data.data;
     },
+    enabled: !!token,
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 };
 
 export const useReviewStats = () => {
+  const token = useAuthStore(state => state.token);
+
   return useQuery({
     queryKey: ['admin-review-stats'],
     queryFn: async () => {
       const response = await reviewsApi.getStats();
       return response.data.data;
     },
+    enabled: !!token,
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 };
 

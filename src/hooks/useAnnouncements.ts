@@ -1,12 +1,18 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { announcementsApi } from '@/lib/api';
+import { useAuthStore } from '@/store/authStore';
 import type { CreateAnnouncementData, UpdateAnnouncementData } from '@/types/announcement';
 
 export function useAnnouncements() {
+  const token = useAuthStore(state => state.token);
+
   return useQuery({
     queryKey: ['announcements'],
     queryFn: () => announcementsApi.getAll().then(res => res.data),
+    enabled: !!token,
+    retry: false,
     staleTime: 1000 * 60,
+    refetchOnWindowFocus: false,
   });
 }
 
